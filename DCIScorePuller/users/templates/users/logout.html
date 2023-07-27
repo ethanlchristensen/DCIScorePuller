@@ -1,0 +1,14 @@
+{% extends "pull/base.html" %}
+{% block content %}
+<body>
+    <h2>You have been logged out</h2>
+    <div class="border-top pt-3">
+        <small>
+            Already Have An Account? <a class="a-login" href="{% url 'login' %}">Login</a>
+        </small>
+        <small>
+            Welcome Page <a class="a-welcome" href="{% url 'pull-home' %}">Welcome</a>
+        </small>
+    </div>
+</body>
+{% endblock content %}

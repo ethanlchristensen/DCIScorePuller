@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&family=Nunito&family=Poppins&display=swap');
+
+:root {
+  /* --main-color: #df2626; */
+  --main-color: #535353;
+  --secondary-color: #76abff;
+}
+
+a {
+  text-decoration: none;
+  color: var(--secondary-color);
+}
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+    background: #FFFFFF;
+    color: var(--main-color);
+    margin-top: 5rem;
+  }
+
+  #buttons {
+    position: absolute;
+  }
+
+  .buttons li{
+    display: inline;
+    padding: 10px;
+  }
+  
+  input {
+    border: none;
+    background-color: transparent;
+    resize: none;
+    outline: none;
+    font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
+    font-size: 16px;
+  }
+  
+  .no-outline:focus {
+    outline: none;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #444444;
+  }
+  
+  ul {
+    margin: 0;
+    list-style-type: none;
+  }
+  
+  .bg-steel {
+    background-color: var(--main-color);
+  }
+
+  .site-header .navbar-nav .nav-link {
+    color: #ffffff;
+    transition: ease all 0.5s;
+  }
+  
+  .site-header .navbar-nav .nav-link:hover {
+    color: var(--secondary-color);
+  }
+  
+  .site-header .navbar-nav .nav-link.active {
+    font-weight: 500;
+  }
+
+  .content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+  
+  .article-title {
+    color: #444444;
+  }
+  
+  a.article-title:hover {
+    color: #428bca;
+    text-decoration: none;
+  }
+  
+  .article-content {
+    white-space: pre-line;
+  }
+  
+  .article-img {
+    height: 65px;
+    width: 65px;
+    margin-right: 16px;
+  }
+  
+  .article-metadata {
+    padding-bottom: 1px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #FFFFFF
+  }
+  
+  .article-metadata a:hover {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .article-svg {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+  }
+  
+  .account-img {
+    height: 125px;
+    width: 125px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .account-heading {
+    font-size: 2.5rem;
+  }
+  
+  input[type=text] {
+      text-align:left;
+      text-align:top;
+  }
+
+  .button-34 {
+    background: #5f788a;
+    border-radius: 999px;
+    box-shadow: #5E5DF0 0 10px 20px -10px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    opacity: 1;
+    outline: 0 solid transparent;
+    padding: 8px 18px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: fit-content;
+    word-break: break-word;
+    border: 0;
+  }
+
+  .button-34:hover {
+    background: #ffffff;
+    box-shadow: #5E5DF0 0 10px 20px -10px;
+    color: #5f788a;
+  }
+
+  #buttons li {
+    display: inline;
+  }
+
+  .profile-banner {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-header {
+    border: 2px solid #33333368;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-header .profile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+  }
+
+  .profile-header .profile-content {
+    width: 100%;
+  }
