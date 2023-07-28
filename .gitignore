@@ -161,3 +161,4 @@ cython_debug/
 media/
 test.py
 RECAP_HTML/
+RECAP_JSON/

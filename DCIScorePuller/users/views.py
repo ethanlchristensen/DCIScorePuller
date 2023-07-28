@@ -27,34 +27,34 @@ def register(request):
 
 @login_required
 def profile(request):
-        if request.method == 'POST':
-            user_update_form    = UserUpdateForm(request.POST, instance=request.user)
-            profile_update_form = ProfileUpdateForm(request.POST, request.FILES,
-                                                    instance=request.user.profile)
-            
-           
-            if user_update_form.is_valid() and profile_update_form.is_valid():
+    if request.method == 'POST':
+        user_update_form    = UserUpdateForm(request.POST, instance=request.user)
+        profile_update_form = ProfileUpdateForm(request.POST, request.FILES,
+                                                instance=request.user.profile)
+        
+        
+        if user_update_form.is_valid() and profile_update_form.is_valid():
 
-                old_photo = User.objects.filter(id=request.user.id).first().profile.image
+            old_photo = User.objects.filter(id=request.user.id).first().profile.image
 
-                user_update_form.save()
-                profile_update_form.save()
+            user_update_form.save()
+            profile_update_form.save()
 
-                incoming_photo = profile_update_form.cleaned_data['image']
+            incoming_photo = profile_update_form.cleaned_data['image']
 
-                if str(old_photo) not in str(incoming_photo) and 'default.png' not in str(old_photo):
-                    os.remove(f"{settings.MEDIA_ROOT}\{old_photo}")
-                     
-                messages.success(request, "Your profile has been updated successfully.")
-                return redirect('profile')
-        else:
-            user_update_form = UserUpdateForm(instance=request.user)
-            profile_update_form = ProfileUpdateForm(instance=request.user.profile)
-            you = User.objects.get(username=request.user)
-            context = {
-                'you': you,
-                'title': 'Profile',
-                'user_update_form': user_update_form,
-                'profile_update_form': profile_update_form,
-            }
-        return render(request, 'users/profile.html', context)
+            if str(old_photo) not in str(incoming_photo) and 'default.png' not in str(old_photo):
+                os.remove(f"{settings.MEDIA_ROOT}\{old_photo}")
+                    
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('profile')
+    else:
+        user_update_form = UserUpdateForm(instance=request.user)
+        profile_update_form = ProfileUpdateForm(instance=request.user.profile)
+        you = User.objects.get(username=request.user)
+        context = {
+            'you': you,
+            'title': 'Profile',
+            'user_update_form': user_update_form,
+            'profile_update_form': profile_update_form,
+        }
+    return render(request, 'users/profile.html', context)
