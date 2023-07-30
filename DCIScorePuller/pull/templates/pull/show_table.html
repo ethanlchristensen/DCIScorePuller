@@ -1,0 +1,39 @@
+{% extends "pull/base.html" %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% block content %}
+<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js"></script>
+<div class="view-table">
+    <h1>Show Table</h1>
+    <hr/>
+    <div class="row">
+        <div class="col">
+            <form method="get">
+                <div id="autocomplete" class="autocomplete">
+                    {{ myFilter.form|crispy }}
+                    <ul class="autocomplete-result-list"></ul>
+                </div>
+                <button class="btn btn-primary" , type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="table">
+    {% render_table table %}
+</div>
+<script>
+    new Autocomplete("#autocomplete", {
+        search: (input) => {
+            const url = `/pull/autocomplete?type=show&query=${input}`;
+            return new Promise((resolve) => {
+                fetch(url)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        resolve(data.data);
+                    });
+            });
+        },
+    });
+</script>
+{% endblock content %}

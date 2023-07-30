@@ -1,0 +1,10 @@
+{% extends "pull/base.html" %}
+{% block content %}
+<div class="pull-admin">
+    <h1>DCI Score Puller Admin Page</h1>
+    <hr>
+    <p>
+        <a href="{% url 'pull-scrape' %}" class="btn btn-primary">Scrape DCI Site</a>
+    </p>
+</div>
+{% endblock content %}

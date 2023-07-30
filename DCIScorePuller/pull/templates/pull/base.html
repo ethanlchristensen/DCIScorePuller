@@ -35,6 +35,9 @@
           <div class="navbar-nav me-auto">
             <a class="nav-item nav-link" href="{% url 'pull-home' %}">Home</a>
             <a class="nav-item nav-link" href="{% url 'pull-about' %}">About</a>
+            {% if user.is_superuser %}
+            <a class="nav-item nav-link" href="{% url 'pull-admin' %}">Admin</a>
+            {% endif %}
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">

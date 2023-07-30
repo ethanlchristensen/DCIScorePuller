@@ -5,6 +5,7 @@ import urllib
 from bs4 import BeautifulSoup
 import os
 import json
+from datetime import datetime
 
 class DciScorePuller:
     def __init__(self, season=2023):
@@ -25,13 +26,11 @@ class DciScorePuller:
             html_byte_content = html_file.read()
             return html_byte_content
 
-    def get_shows(self):
+    def get_competitions(self):
         shows = []
-
         soup = BeautifulSoup(self.get_html_bytes(url=self.shows_url), "html5lib")
         pagination = soup.find_all("div", {"class": "pagination"})
         total_pagination = int(pagination[0].find_all("span", {"class": "total"})[0].text)
-
         for page in range(1, total_pagination + 1):
             page_n = f"{self.shows_url}&page=%d" % page
             soup = BeautifulSoup(self.get_html_bytes(url=page_n), "html5lib")
@@ -49,11 +48,12 @@ class DciScorePuller:
 
         return self
 
-    def format_show_titles(self):
+    def format_competition_titles(self):
         formatted_shows = []
         for show in self.shows:
             formatted_shows.append(f"{self.season}-" + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show)).replace(" ", "-").lower())
         self.formatted_shows = formatted_shows
+        self.formatted_shows_mapping = {formatted:orig for formatted, orig in zip(self.formatted_shows, self.shows)}
         return self
     
     def save_files(self):
@@ -75,66 +75,50 @@ class DciScorePuller:
                 soup = BeautifulSoup(full_recap_html, "html5lib")
                 print(f"EAT THAT DAMN SOUP! {show}")
 
-    def get_full_recap(self):
+    def get_competition_recap(self, show):
         FULL_RECAP = {}
 
-        for show in self.formatted_shows:
-            show_recap_url = f"{self.full_recap_scores_url}/%s" % show
-            try:
+        show_recap_url = f"{self.full_recap_scores_url}/%s" % show
+        try:
+            
+            FULL_RECAP[show] = {}
+            FULL_RECAP[show]["shows"] = {}
+
+            show_score_recap_content = self.get_html_bytes(url=show_recap_url)
+            soup = BeautifulSoup(show_score_recap_content, "html5lib")
+
+            tables = soup.find_all("div", {"class": "wrap-scores-details-table"})
+            table_header_date = soup.find_all("div", {"class": "table-header"})[0].find_all("div", {"class": "details"})[0].find_all("span")[0].text
+
+            FULL_RECAP[show]["date"] = datetime.strptime(table_header_date, "%B %d, %Y")
+            FULL_RECAP[show]["Correct Competition Name"] = self.formatted_shows_mapping[show]
+
+            for table_idx, table in enumerate(tables):
                 
-                FULL_RECAP[show] = {}
-                FULL_RECAP[show]["shows"] = {}
+                header = table.find_all("h4")
 
-                show_score_recap_content = self.get_html_bytes(url=show_recap_url)
-                # show_score_recap_content = self.get_html_bytes_from_file(formatted_show=show+"-recap")
-                soup = BeautifulSoup(show_score_recap_content, "html5lib")
-                """
-                TODO:
-                One the recap site, there could be many different tables seperated by class
-                need to account for these and the gaps to properly pull all the data! YUP #ATTT
-                """
+                if header[0].text == "All Age Class": break
 
-                tables = soup.find_all("div", {"class": "wrap-scores-details-table"})
-                table_header_date = soup.find_all("div", {"class": "table-header"})[0].find_all("div", {"class": "details"})[0].find_all("span")[0].text
+                sticky_corps = table.find_all("div", {"class": "sticky-corps"})[0]
+                corps = sticky_corps.find_all("li")
+                for corp in corps:
+                    FULL_RECAP[show]["shows"][corp.text] = {}
+                
+                corps_names = [corp.text for corp in corps]
+                scores = table.find_all("div", {"class": "data-table"})
+                try:
+                    for i, score in enumerate(scores[1:]):
+                        
+                        current_corp = corps_names[i]
 
-                FULL_RECAP[show]["date"] = table_header_date
-                # with open(f"./RECAP_DEBUG/{show}-debug.txt", "w") as f:
-                #         f.write(
-                #             f"Got {len(tables)} tables.\n"
-                #         )
+                        score_groups = score.find_all("div", {"class":"cell"})
+                        general_effect = score_groups[0]
+                        visual = score_groups[1]
+                        music = score_groups[2]
 
-
-                for table_idx, table in enumerate(tables):
-                    
-                    header = table.find_all("h4")
-
-                    if header[0].text == "All Age Class": break
-
-                    sticky_corps = table.find_all("div", {"class": "sticky-corps"})[0]
-                    corps = sticky_corps.find_all("li")
-                    for corp in corps:
-                        FULL_RECAP[show]["shows"][corp.text] = {}
-                    
-                    corps_names = [corp.text for corp in corps]
-                    scores = table.find_all("div", {"class": "data-table"})
-
-                    # with open(f"./RECAP_DEBUG/{show}-debug.txt", "a") as f:
-                    #     f.write(
-                    #         f"For table {table_idx}, got {len(scores)} scores.\nFor table {table_idx} got these crops: {corps_names}\n"
-                    #     )
-
-                    try:
-                        for i, score in enumerate(scores[1:]):
-                            
-                            current_corp = corps_names[i]
-
-                            score_groups = score.find_all("div", {"class":"cell"})
-                            general_effect = score_groups[0]
-                            visual = score_groups[1]
-                            music = score_groups[2]
-
-                            # GE
-                            ge_column = general_effect.find_all("div", {"class":"column"})
+                        # GE
+                        ge_column = general_effect.find_all("div", {"class":"column"})
+                        if len(ge_column) == 3:
                             ge_1 = ge_column[0]
                             ge_2 = ge_column[1]
                             ge_total = ge_column[2]
@@ -154,113 +138,161 @@ class DciScorePuller:
 
                             FULL_RECAP[show]["shows"][current_corp]["General Effect"] = {
                                 "General Effect 1": {
-                                    "Rep": ge_1_rep,
-                                    "Perf": ge_1_perf,
-                                    "Total": ge_1_total
+                                    "Rep": float(ge_1_rep),
+                                    "Perf": float(ge_1_perf),
+                                    "Total": float(ge_1_total)
                                 },
                                 "General Effect 2": {
-                                    "Rep": ge_2_rep,
-                                    "Perf": ge_2_perf,
-                                    "Total": ge_2_total
+                                    "Rep": float(ge_2_rep),
+                                    "Perf": float(ge_2_perf),
+                                    "Total": float(ge_2_total)
                                 },
-                                "Total": ge_total_score
+                                "Total": float(ge_total_score)
+                            }
+                        else:
+                            ge_1_1 = ge_column[0]
+                            ge_1_2 = ge_column[1]
+                            ge_2_1 = ge_column[2]
+                            ge_2_2 = ge_column[3]
+                            ge_total = ge_column[4]
+
+                            ge_1_1_scores = ge_1_1.find_all("span")
+                            ge_1_1_rep = ge_1_1_scores[0].text
+                            ge_1_1_perf = ge_1_1_scores[2].text
+                            ge_1_1_total = ge_1_1_scores[4].text
+
+                            ge_1_2_scores = ge_1_2.find_all("span")
+                            ge_1_2_rep = ge_1_2_scores[0].text
+                            ge_1_2_perf = ge_1_2_scores[2].text
+                            ge_1_2_total = ge_1_2_scores[4].text
+
+                            ge_2_1_scores = ge_2_1.find_all("span")
+                            ge_2_1_rep = ge_2_1_scores[0].text
+                            ge_2_1_perf = ge_2_1_scores[2].text
+                            ge_2_1_total = ge_2_1_scores[4].text
+
+                            ge_2_2_scores = ge_2_2.find_all("span")
+                            ge_2_2_rep = ge_2_2_scores[0].text
+                            ge_2_2_perf = ge_2_2_scores[2].text
+                            ge_2_2_total = ge_2_2_scores[4].text
+
+                            ge_total_scores = ge_total.find_all("span")
+                            ge_total_score = ge_total_scores[0].text
+
+                            FULL_RECAP[show]["shows"][current_corp]["General Effect"] = {
+                                "General Effect 1 - 1": {
+                                    "Rep": float(ge_1_1_rep),
+                                    "Perf": float(ge_1_1_perf),
+                                    "Total": float(ge_1_1_total)
+                                },
+                                "General Effect 1 - 2": {
+                                    "Rep": float(ge_1_2_rep),
+                                    "Perf": float(ge_1_2_perf),
+                                    "Total": float(ge_1_2_total)
+                                },
+                                "General Effect 2 - 1": {
+                                    "Rep": float(ge_2_1_rep),
+                                    "Perf": float(ge_2_1_perf),
+                                    "Total": float(ge_2_1_total)
+                                },
+                                "General Effect 2 - 2": {
+                                    "Rep": float(ge_2_2_rep),
+                                    "Perf": float(ge_2_2_perf),
+                                    "Total": float(ge_2_2_total)
+                                },
+                                "Total": float(ge_total_score)
                             }
 
-                            # VISUAL
-                            vi_column = visual.find_all("div", {"class": "column"})
-                            vp = vi_column[0]
-                            va = vi_column[1]
-                            cg = vi_column[2]
-                            vi_total = vi_column[3]
 
-                            vp_scores = vp.find_all("span")
-                            vp_cont = vp_scores[0].text
-                            vp_achv = vp_scores[2].text
-                            vp_total = vp_scores[4].text
+                        # VISUAL
+                        vi_column = visual.find_all("div", {"class": "column"})
+                        vp = vi_column[0]
+                        va = vi_column[1]
+                        cg = vi_column[2]
+                        vi_total = vi_column[3]
 
-                            va_scores = va.find_all("span")
-                            va_cont = va_scores[0].text
-                            va_achv = va_scores[2].text
-                            va_total = va_scores[4].text
+                        vp_scores = vp.find_all("span")
+                        vp_cont = vp_scores[0].text
+                        vp_achv = vp_scores[2].text
+                        vp_total = vp_scores[4].text
 
-                            cg_scores = cg.find_all("span")
-                            cg_cont = cg_scores[0].text
-                            cg_achv = cg_scores[2].text
-                            cg_total = cg_scores[4].text
+                        va_scores = va.find_all("span")
+                        va_cont = va_scores[0].text
+                        va_achv = va_scores[2].text
+                        va_total = va_scores[4].text
 
-                            vi_total_scores = vi_total.find_all("span")
-                            vi_total_score = vi_total_scores[0].text
+                        cg_scores = cg.find_all("span")
+                        cg_cont = cg_scores[0].text
+                        cg_achv = cg_scores[2].text
+                        cg_total = cg_scores[4].text
 
-                            FULL_RECAP[show]["shows"][current_corp]["Visual"] = {
-                                "Visual Proficiency": {
-                                    "Cont": vp_cont,
-                                    "Achv": vp_achv,
-                                    "Total": vp_total
-                                },
-                                "Visual Analysis": {
-                                    "Cont": va_cont,
-                                    "Achv": va_achv,
-                                    "Total": va_total
-                                },
-                                "Color Guard": {
-                                    "Cont": cg_cont,
-                                    "Achv": cg_achv,
-                                    "Total": cg_total
-                                },
-                                "Total": vi_total_score
-                            }
+                        vi_total_scores = vi_total.find_all("span")
+                        vi_total_score = vi_total_scores[0].text
 
-                            # MUSIC
-                            music_column = music.find_all("div", {"class": "column"})
-                            mu_brass = music_column[0]
-                            mu_analysis = music_column[1]
-                            mu_percussion = music_column[2]
-                            mu_total = vi_column[3]
+                        FULL_RECAP[show]["shows"][current_corp]["Visual"] = {
+                            "Visual Proficiency": {
+                                "Cont": float(vp_cont),
+                                "Achv": float(vp_achv),
+                                "Total": float(vp_total)
+                            },
+                            "Visual Analysis": {
+                                "Cont": float(va_cont),
+                                "Achv": float(va_achv),
+                                "Total": float(va_total)
+                            },
+                            "Color Guard": {
+                                "Cont": float(cg_cont),
+                                "Achv": float(cg_achv),
+                                "Total": float(cg_total)
+                            },
+                            "Total": float(vi_total_score)
+                        }
 
-                            mu_brass_scores = mu_brass.find_all("span")
-                            mu_b_cont = mu_brass_scores[0].text
-                            mu_b_achv = mu_brass_scores[2].text
-                            mu_b_total = mu_brass_scores[4].text
+                        # MUSIC
+                        music_column = music.find_all("div", {"class": "column"})
+                        mu_brass = music_column[0]
+                        mu_analysis = music_column[1]
+                        mu_percussion = music_column[2]
+                        mu_total = music_column[3]
 
-                            mu_analysis_scores = mu_analysis.find_all("span")
-                            mu_a_cont = mu_analysis_scores[0].text
-                            mu_a_achv = mu_analysis_scores[2].text
-                            mu_a_total = mu_analysis_scores[4].text
+                        mu_brass_scores = mu_brass.find_all("span")
+                        mu_b_cont = mu_brass_scores[0].text
+                        mu_b_achv = mu_brass_scores[2].text
+                        mu_b_total = mu_brass_scores[4].text
 
-                            mu_perc_scores = mu_percussion.find_all("span")
-                            mu_p_cont = mu_perc_scores[0].text
-                            mu_p_achv = mu_perc_scores[2].text
-                            mu_p_total = mu_perc_scores[4].text
+                        mu_analysis_scores = mu_analysis.find_all("span")
+                        mu_a_cont = mu_analysis_scores[0].text
+                        mu_a_achv = mu_analysis_scores[2].text
+                        mu_a_total = mu_analysis_scores[4].text
 
-                            mu_total_scores = mu_total.find_all("span")
-                            mu_total_score = mu_total_scores[0].text
+                        mu_perc_scores = mu_percussion.find_all("span")
+                        mu_p_cont = mu_perc_scores[0].text
+                        mu_p_achv = mu_perc_scores[2].text
+                        mu_p_total = mu_perc_scores[4].text
 
-                            FULL_RECAP[show]["shows"][current_corp]["Music"] = {
-                                "Music Brass": {
-                                    "Cont": mu_b_cont,
-                                    "Achv": mu_b_achv,
-                                    "Total": mu_b_total
-                                },
-                                "Music Analysis": {
-                                    "Cont": mu_a_cont,
-                                    "Achv": mu_a_achv,
-                                    "Total": mu_a_total
-                                },
-                                "Music Percussion": {
-                                    "Cont": mu_p_cont,
-                                    "Achv": mu_p_achv,
-                                    "Total": mu_p_total
-                                },
-                                "Total": mu_total_score,
-                            }
-                    except Exception as e2:
-                        print(f"ERROR: {e2}")
+                        mu_total_scores = mu_total.find_all("span")
+                        mu_total_score = mu_total_scores[0].text
 
-                if not os.path.exists(f"./RECAP_JSON/{show}-recap.json"):
-                    with open(f"./RECAP_JSON/{show}-recap.json", "w") as f:
-                        f.write(json.dumps(FULL_RECAP[show], indent=4))
-                
-                print(f"grabbed scores for {show} . . .")
-
-            except Exception as exception:
-                print(f"Could not grab full recap for {show}!\n -> ERROR: {exception}")
+                        FULL_RECAP[show]["shows"][current_corp]["Music"] = {
+                            "Music Brass": {
+                                "Cont": float(mu_b_cont),
+                                "Achv": float(mu_b_achv),
+                                "Total": float(mu_b_total)
+                            },
+                            "Music Analysis": {
+                                "Cont": float(mu_a_cont),
+                                "Achv": float(mu_a_achv),
+                                "Total": float(mu_a_total)
+                            },
+                            "Music Percussion": {
+                                "Cont": float(mu_p_cont),
+                                "Achv": float(mu_p_achv),
+                                "Total": float(mu_p_total)
+                            },
+                            "Total": float(mu_total_score),
+                        }
+                except Exception as e2:
+                    print(f"ERROR: {e2}")
+        except Exception as exception:
+            print(f"Could not grab full recap for {show}!\n -> ERROR: {exception}")
+        return FULL_RECAP[show]

@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'users.apps.UsersConfig',
     'django_tables2',
-    'pull.apps.PullConfig'
+    'pull.apps.PullConfig',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
@@ -150,4 +151,4 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5-responsive.html"
