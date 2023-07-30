@@ -367,7 +367,7 @@ def autocomplete_search(request):
 
 
 @login_required
-def test_chart(request):
+def rank_chart(request):
     """
     View for testing charting scores
     """
@@ -378,8 +378,14 @@ def test_chart(request):
     title = "Chart Testing"
     # get the shows for a certain Corp
     shows = Show.objects.all()
-    # create a list of 12 colors for each corp
-    top_12_colors = [
+    # get the top-n value from url
+    top = request.GET.get("top")
+    if top:
+        top = int(top)
+    else:
+        top = 12
+    # create a list of n colors for each corp
+    top_n_colors = [
         "#e6194b",
         "#3cb44b",
         "#ffe119",
@@ -403,20 +409,47 @@ def test_chart(request):
         "#ffffff",
         "#000000",
     ]
+
+    top_n_background_colors = [
+        "#e6194b1A",
+        "#3cb44b1A",
+        "#ffe1191A",
+        "#4363d81A",
+        "#f582311A",
+        "#911eb41A",
+        "#46f0f01A",
+        "#f032e61A",
+        "#bcf60c1A",
+        "#fabebe1A",
+        "#0080801A",
+        "#e6beff1A",
+        "#9a63241A",
+        "#fffac81A",
+        "#8000001A",
+        "#aaffc31A",
+        "#8080001A",
+        "#ffd8b11A",
+        "#0000751A",
+        "#8080801A",
+        "#ffffff1A",
+        "#0000001A",
+    ]
+
     # create the data that will be used for charting
     # get the top 12 corps
     ordered_show_corps = [show.corp.name for show in shows.order_by("total_score")]
-    top_12 = []
+    top_n = []
     for corp in ordered_show_corps[::-1]:
-        if corp not in top_12:
-            top_12.append(corp)
-        if len(top_12) == 12:
+        if corp not in top_n:
+            top_n.append(corp)
+        if len(top_n) == top:
             break
 
+    top_n = top_n[::-1]
     # get the chart data for the top 12
     chart_data = {}
     all_dates = []
-    for i, corp in enumerate(top_12):
+    for i, corp in enumerate(top_n):
         chart_data[corp] = {}
         corp_shows = shows.filter(corp__name=corp).order_by(
             "competition__competition_date"
@@ -427,7 +460,10 @@ def test_chart(request):
         chart_data[corp]["data"] = [
             {"x": date, "y": score} for date, score in zip(dates, scores)
         ]
-        chart_data[corp]["color"] = top_12_colors[i]
+        chart_data[corp]["color"] = top_n_colors[i % len(top_n_colors)]
+        chart_data[corp]["bg_color"] = top_n_background_colors[
+            i % len(top_n_background_colors)
+        ]
         for date in dates:
             if date not in all_dates:
                 all_dates.append(date)

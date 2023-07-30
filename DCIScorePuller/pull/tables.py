@@ -13,7 +13,7 @@ class GeneralEffectTotal(tables.Column):
 class VisualTotal(tables.Column):
     def render(self, value):
         return value.visual_total
-    
+
 
 class MusicTotal(tables.Column):
     def render(self, value):
@@ -22,11 +22,15 @@ class MusicTotal(tables.Column):
 
 class ShowTable(tables.Table):
     competition = tables.Column()
-    date = tables.Column(accessor="get_date",
-                         verbose_name="Date",
-                         order_by=("competition.competition_date"))
+    date = tables.Column(
+        accessor="get_date",
+        verbose_name="Date",
+        order_by=("competition.competition_date"),
+    )
     corp = tables.Column()
-    general_effect = GeneralEffectTotal(order_by=("general_effect.general_effect_total"))
+    general_effect = GeneralEffectTotal(
+        order_by=("general_effect.general_effect_total")
+    )
     visual = VisualTotal(order_by=("visual.visual_total"))
     music = MusicTotal(order_by=("music.music_total"))
     total_score = tables.Column()
