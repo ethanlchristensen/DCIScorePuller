@@ -28,4 +28,5 @@ jobs:
     - name: Run Tests
       run: |
         cd ..
+        ls
         python3 manage.py test
