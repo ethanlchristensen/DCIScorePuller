@@ -13,5 +13,6 @@ class ShowFilter(FilterSet):
     def query_filter(self, queryset, name, value):
         return queryset.filter(
             Q(competition__competition_name_original__icontains=value) |
-            Q(corp__name__icontains=value)
+            Q(corp__name__icontains=value) |
+            Q(competition__competition_date_as_string__icontains=value)
         )

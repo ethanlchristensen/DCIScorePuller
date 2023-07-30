@@ -1,0 +1,36 @@
+{% extends "pull/base.html" %}
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+                    {% for date in chart_data.labels %}
+                        '{{date}}',
+                    {% endfor %}
+                ],
+                datasets: [
+                    {% for corp, corp_chart_data in chart_data.items %}
+                        {
+                            label: '{{corp_chart_data.label}}',
+                            data: [
+                                {% for group in corp_chart_data.data %}
+                                    {'x': '{{group.x}}', 'y':{{group.y}}},
+                                {% endfor %}
+                            ],
+                            borderColor: '{{corp_chart_data.color}}',
+                            backgroundColor: 'rgba(0, 0, 0, 0)'
+                        },
+                    {% endfor %}
+                ]
+            },
+        });
+    });
+</script>
+{% endblock scripts %}
+{% block content %}
+<h3>Chart #ATTT</h3>
+<canvas id="myChart"></canvas>
+{% endblock content %}

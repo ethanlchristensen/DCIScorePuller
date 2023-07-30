@@ -250,47 +250,103 @@ class DciScorePuller:
 
                         # MUSIC
                         music_column = music.find_all("div", {"class": "column"})
-                        mu_brass = music_column[0]
-                        mu_analysis = music_column[1]
-                        mu_percussion = music_column[2]
-                        mu_total = music_column[3]
 
-                        mu_brass_scores = mu_brass.find_all("span")
-                        mu_b_cont = mu_brass_scores[0].text
-                        mu_b_achv = mu_brass_scores[2].text
-                        mu_b_total = mu_brass_scores[4].text
+                        if len(music_column) == 4:
+                            mu_brass = music_column[0]
+                            mu_analysis = music_column[1]
+                            mu_percussion = music_column[2]
+                            mu_total = music_column[3]
 
-                        mu_analysis_scores = mu_analysis.find_all("span")
-                        mu_a_cont = mu_analysis_scores[0].text
-                        mu_a_achv = mu_analysis_scores[2].text
-                        mu_a_total = mu_analysis_scores[4].text
+                            mu_brass_scores = mu_brass.find_all("span")
+                            mu_b_cont = mu_brass_scores[0].text
+                            mu_b_achv = mu_brass_scores[2].text
+                            mu_b_total = mu_brass_scores[4].text
 
-                        mu_perc_scores = mu_percussion.find_all("span")
-                        mu_p_cont = mu_perc_scores[0].text
-                        mu_p_achv = mu_perc_scores[2].text
-                        mu_p_total = mu_perc_scores[4].text
+                            mu_analysis_scores = mu_analysis.find_all("span")
+                            mu_a_cont = mu_analysis_scores[0].text
+                            mu_a_achv = mu_analysis_scores[2].text
+                            mu_a_total = mu_analysis_scores[4].text
 
-                        mu_total_scores = mu_total.find_all("span")
-                        mu_total_score = mu_total_scores[0].text
+                            mu_perc_scores = mu_percussion.find_all("span")
+                            mu_p_cont = mu_perc_scores[0].text
+                            mu_p_achv = mu_perc_scores[2].text
+                            mu_p_total = mu_perc_scores[4].text
 
-                        FULL_RECAP[show]["shows"][current_corp]["Music"] = {
-                            "Music Brass": {
-                                "Cont": float(mu_b_cont),
-                                "Achv": float(mu_b_achv),
-                                "Total": float(mu_b_total)
-                            },
-                            "Music Analysis": {
-                                "Cont": float(mu_a_cont),
-                                "Achv": float(mu_a_achv),
-                                "Total": float(mu_a_total)
-                            },
-                            "Music Percussion": {
-                                "Cont": float(mu_p_cont),
-                                "Achv": float(mu_p_achv),
-                                "Total": float(mu_p_total)
-                            },
-                            "Total": float(mu_total_score),
-                        }
+                            mu_total_scores = mu_total.find_all("span")
+                            mu_total_score = mu_total_scores[0].text
+
+                            FULL_RECAP[show]["shows"][current_corp]["Music"] = {
+                                "Music Brass": {
+                                    "Cont": float(mu_b_cont),
+                                    "Achv": float(mu_b_achv),
+                                    "Total": float(mu_b_total)
+                                },
+                                "Music Analysis - 1": {
+                                    "Cont": float(mu_a_cont),
+                                    "Achv": float(mu_a_achv),
+                                    "Total": float(mu_a_total)
+                                },
+                                "Music Percussion": {
+                                    "Cont": float(mu_p_cont),
+                                    "Achv": float(mu_p_achv),
+                                    "Total": float(mu_p_total)
+                                },
+                                "Total": float(mu_total_score),
+                            }
+                        # otherwise we have two Music Analysis Columns
+                        else:
+                            mu_brass = music_column[0]
+                            mu_analysis_1 = music_column[1]
+                            mu_analysis_2 = music_column[2]
+                            mu_percussion = music_column[3]
+                            mu_total = music_column[4]
+
+                            mu_brass_scores = mu_brass.find_all("span")
+                            mu_b_cont = mu_brass_scores[0].text
+                            mu_b_achv = mu_brass_scores[2].text
+                            mu_b_total = mu_brass_scores[4].text
+
+                            mu_analysis_1_scores = mu_analysis_1.find_all("span")
+                            mu_a_1_cont = mu_analysis_1_scores[0].text
+                            mu_a_1_achv = mu_analysis_1_scores[2].text
+                            mu_a_1_total = mu_analysis_1_scores[4].text
+
+                            mu_analysis_2_scores = mu_analysis_2.find_all("span")
+                            mu_a_2_cont = mu_analysis_2_scores[0].text
+                            mu_a_2_achv = mu_analysis_2_scores[2].text
+                            mu_a_2_total = mu_analysis_2_scores[4].text
+
+                            mu_perc_scores = mu_percussion.find_all("span")
+                            mu_p_cont = mu_perc_scores[0].text
+                            mu_p_achv = mu_perc_scores[2].text
+                            mu_p_total = mu_perc_scores[4].text
+
+                            mu_total_scores = mu_total.find_all("span")
+                            mu_total_score = mu_total_scores[0].text
+
+                            FULL_RECAP[show]["shows"][current_corp]["Music"] = {
+                                "Music Brass": {
+                                    "Cont": float(mu_b_cont),
+                                    "Achv": float(mu_b_achv),
+                                    "Total": float(mu_b_total)
+                                },
+                                "Music Analysis - 1": {
+                                    "Cont": float(mu_a_1_cont),
+                                    "Achv": float(mu_a_1_achv),
+                                    "Total": float(mu_a_1_total)
+                                },
+                                "Music Analysis - 2": {
+                                    "Cont": float(mu_a_2_cont),
+                                    "Achv": float(mu_a_2_achv),
+                                    "Total": float(mu_a_2_total)
+                                },
+                                "Music Percussion": {
+                                    "Cont": float(mu_p_cont),
+                                    "Achv": float(mu_p_achv),
+                                    "Total": float(mu_p_total)
+                                },
+                                "Total": float(mu_total_score),
+                            }
                 except Exception as e2:
                     print(f"ERROR: {e2}")
         except Exception as exception:

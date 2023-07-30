@@ -19,6 +19,7 @@ class Competition(models.Model):
     competition_name = models.TextField(default="No Competition Name Provided")
     competition_name_original = models.TextField(default="No Original Competition Name Provided")
     competition_date = models.DateField(default=dut.now)
+    competition_date_as_string = models.TextField(default="")
 
     def __str__(self):
         return self.competition_name_original
@@ -85,7 +86,8 @@ class Visual(models.Model):
 class Music(models.Model):
     key = models.AutoField(primary_key=True)
     music_brass = models.ForeignKey(ContAchvTotal, on_delete=models.CASCADE, related_name="music_brass")
-    music_analysis = models.ForeignKey(ContAchvTotal, on_delete=models.CASCADE, related_name="music_analysis")
+    music_analysis_one = models.ForeignKey(ContAchvTotal, on_delete=models.CASCADE, related_name="music_analysis_one")
+    music_analysis_two = models.ForeignKey(ContAchvTotal, on_delete=models.CASCADE, related_name="music_analysis_two", null=True)
     music_percussion = models.ForeignKey(ContAchvTotal, on_delete=models.CASCADE, related_name="music_percussion")
     music_total = models.DecimalField(default=0.0, decimal_places=3, max_digits=6)
 
@@ -111,3 +113,6 @@ class Show(models.Model):
 
     def __str__(self):
         return f"{self.competition.competition_name}-{self.corp.name}"
+
+    def get_date(self):
+        return self.competition.competition_date
