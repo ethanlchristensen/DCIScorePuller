@@ -162,3 +162,4 @@ media/
 test.py
 RECAP_HTML/
 RECAP_JSON/
+RECAP_DEBUG/
