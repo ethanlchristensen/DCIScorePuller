@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import *
@@ -512,6 +513,7 @@ def competition_chart(request, competition):
     competition_names = [comp.competition_name for comp in Competition.objects.all().order_by("competition_date")]
     if competition not in competition_names:
         competition = competition_names[0]
+        return redirect(reverse('competition-chart', args=(competition,)))
     # get that competition
     competition = Competition.objects.all().filter(competition_name=competition)[0]
     # get the title

@@ -1,7 +1,29 @@
 {% extends "pull/base.html" %}
 {% block content %}
-<h1>#ATTT</h1>
-<a href="{% url 'show-table' %}" class="btn btn-primary btn-lg" role="button">Shows</a>
-<a href="{% url 'rank-chart' %}" class="btn btn-primary btn-lg" role="button">Rankings</a>
-<a href="{% url 'competition-chart' 'erm' %}" class="btn btn-primary btn-lg" role="button">Competition</a>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Option</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td><a href="{% url 'show-table' %}" class="btn btn-primary btn-lg" role="button">Shows</a></td>
+        <td>View all the shows in a table. Sort columns by value or search for a Competition, Corp, or Date.</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td><a href="{% url 'rank-chart' %}" class="btn btn-primary btn-lg" role="button">Rankings</a></td>
+        <td>View Corps Total Score rankings over time.</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td><a href="{% url 'competition-chart' 'erm' %}" class="btn btn-primary btn-lg" role="button">Competition</a></td>
+        <td colspan="2">View a specific Competition scores.</td>
+      </tr>
+    </tbody>
+  </table>
 {% endblock content %}
