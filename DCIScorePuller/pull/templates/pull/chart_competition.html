@@ -1,0 +1,62 @@
+{% extends "pull/base.html" %}
+{% load render_table from django_tables2 %}
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for show in shows %}
+                        '{{ show.corp.name }}',
+                    {% endfor %}
+                ],
+                datasets: [
+                    {
+                    label: 'Scores',
+                    data: [
+                        {% for show in shows %}
+                            {{show.total_score}},
+                        {% endfor %}
+                    ],
+                    borderColor: "#0000FFFF",
+                    backgroundColor: "#0000FFBB",
+                    }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '{{competition.competition_name}} Scores'
+                }
+                }
+            },
+        });
+    });
+</script>
+{% endblock scripts %}
+{% block content %}
+<h3>{{ competition.competition_name_original }} - {{ competition.competition_date_as_string }}</h3>
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        {{ competition.competition_name }}
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        {% for comp_name in competition_names %}
+        <li><a class="dropdown-item" href="{% url 'competition-chart' comp_name %}">{{ comp_name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+<hr/>
+<div class="table">
+    {% render_table table %}
+</div>
+<hr/>
+<canvas id="myChart"></canvas>
+{% endblock content %}

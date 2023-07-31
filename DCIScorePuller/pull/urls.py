@@ -12,4 +12,5 @@ urlpatterns = [
     path("pull/show/table", view=show_table, name="show-table"),
     path("pull/autocomplete", view=autocomplete_search, name="autocomplete"),
     path("pull/chart/rank", view=rank_chart, name="rank-chart"),
+    path("pull/chart/competition/<str:competition>", view=competition_chart, name="competition-chart")
 ]

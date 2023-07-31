@@ -38,6 +38,19 @@ class ShowTable(tables.Table):
     class Meta:
         model = Show
 
+class CompetitionTable(tables.Table):
+    corp = tables.Column()
+    general_effect = GeneralEffectTotal(
+        order_by=("general_effect.general_effect_total")
+    )
+    visual = VisualTotal(order_by=("visual.visual_total"))
+    music = MusicTotal(order_by=("music.music_total"))
+    total_score = tables.Column()
+
+    class Meta:
+        model = Show
+        fields = ['corp', 'general_effect', 'visual', 'total_score']
+
 
 class FilteredShowView(SingleTableMixin, FilterView):
     table_class = ShowTable

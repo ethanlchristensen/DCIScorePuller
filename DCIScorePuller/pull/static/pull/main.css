@@ -177,3 +177,8 @@ body {
     color: var(--text-color-nav);
     border: none;
   }
+
+  .dropdown-menu {
+    max-height: 20rem;
+    overflow-y: scroll;
+  }
