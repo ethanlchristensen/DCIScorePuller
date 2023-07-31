@@ -450,25 +450,51 @@ def rank_chart(request):
     chart_data = {}
     all_dates = []
     for i, corp in enumerate(top_n):
+        corp_shows = shows.filter(corp__name=corp).order_by(
+            "competition__competition_date"
+        )
+        dates = [show.competition.competition_date for show in corp_shows]
+        for date in dates:
+            if date not in all_dates:
+                all_dates.append(date)
+    
+    all_dates = sorted(all_dates)
+
+    for i, corp in enumerate(top_n):
         chart_data[corp] = {}
         corp_shows = shows.filter(corp__name=corp).order_by(
             "competition__competition_date"
         )
         chart_data[corp]["label"] = corp
+        dates_main = []
+        scores_main = []
+        dm_idx = 0
+        sm_idx = 0
         dates = [show.competition.competition_date for show in corp_shows]
         scores = [show.total_score for show in corp_shows]
+        for date in all_dates:
+            if date in dates:
+                dates_main.append(dates[dm_idx])
+                dm_idx += 1
+                scores_main.append(scores[sm_idx])
+                sm_idx += 1
+            else:
+                try:
+                    dates_main.append(date)
+                    scores_main.append(scores[sm_idx])
+                except IndexError:
+                    dates_main.append(date)
+                    scores_main.append(scores[sm_idx-1])
         chart_data[corp]["data"] = [
-            {"x": date, "y": score} for date, score in zip(dates, scores)
+            {"x": date, "y": score} for date, score in zip(dates_main, scores_main)
         ]
         chart_data[corp]["color"] = top_n_colors[i % len(top_n_colors)]
         chart_data[corp]["bg_color"] = top_n_background_colors[
             i % len(top_n_background_colors)
         ]
-        for date in dates:
-            if date not in all_dates:
-                all_dates.append(date)
-    chart_data["labels"] = sorted(all_dates)
+
+    chart_data["labels"] = all_dates
 
     # create the context
-    context = {"title": title, "shows": shows, "chart_data": chart_data}
+    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top}
     return render(request, template_name=template, context=context)

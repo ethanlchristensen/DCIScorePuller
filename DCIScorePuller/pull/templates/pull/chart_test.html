@@ -26,11 +26,35 @@
                     {% endfor %}
                 ]
             },
+            options: {
+                elements: {
+                    line: 'star',
+                },
+                title: {
+                    display: true,
+                    text: 'Top N Corps Scores Over Time'
+                }
+            }
         });
     });
 </script>
 {% endblock scripts %}
 {% block content %}
-<h3>Chart #ATTT</h3>
+<h3>Rankings Chart</h3>
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+      Top {{top}} Corps
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=3">3</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=5">5</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=10">10</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=12">12</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=15">15</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=20">20</a></li>
+      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=100">All</a></li>
+    </ul>
+  </div>
+  <hr/>
 <canvas id="myChart"></canvas>
 {% endblock content %}

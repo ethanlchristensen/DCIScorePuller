@@ -2,7 +2,12 @@
 
 :root {
   /* --main-color: #df2626; */
-  --main-color: #535353;
+  --main-color-nav: #333;
+  --text-color-nav: #ffffff;
+  --secondary-color-nav: #76abff;
+
+  --main-color: #ffffff;
+  --text-color: #333;
   --secondary-color: #76abff;
 }
 
@@ -20,8 +25,8 @@ body::-webkit-scrollbar {
 }
 
 body {
-    background: #FFFFFF;
-    color: var(--main-color);
+    background: var(--main-color);
+    color: var(--text-color);
     margin-top: 5rem;
   }
 
@@ -48,7 +53,7 @@ body {
   }
   
   h1, h2, h3, h4, h5, h6 {
-    color: #444444;
+    color: var(--text-color);
   }
   
   ul {
@@ -57,16 +62,16 @@ body {
   }
   
   .bg-steel {
-    background-color: var(--main-color);
+    background-color: var(--main-color-nav);
   }
 
   .site-header .navbar-nav .nav-link {
-    color: #ffffff;
+    color: var(--text-color-nav);
     transition: ease all 0.5s;
   }
   
   .site-header .navbar-nav .nav-link:hover {
-    color: var(--secondary-color);
+    color: var(--secondary-color-nav);
   }
   
   .site-header .navbar-nav .nav-link.active {
@@ -76,17 +81,17 @@ body {
   .content-section {
     background: #ffffff;
     padding: 10px 20px;
-    border: 1px solid #dddddd;
+    border: 1px solid var(--main-color);
     border-radius: 3px;
     margin-bottom: 20px;
   }
   
   .article-title {
-    color: #444444;
+    color: var(--text-color);
   }
   
   a.article-title:hover {
-    color: #428bca;
+    color: var(--secondary-color);
     text-decoration: none;
   }
   
@@ -107,7 +112,7 @@ body {
   }
   
   .article-metadata a:hover {
-    color: #333;
+    color: var(--secondary-color);
     text-decoration: none;
   }
   
@@ -133,56 +138,42 @@ body {
       text-align:top;
   }
 
-  .button-34 {
-    background: #5f788a;
-    border-radius: 999px;
-    box-shadow: #5E5DF0 0 10px 20px -10px;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 24px;
-    opacity: 1;
-    outline: 0 solid transparent;
-    padding: 8px 18px;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    width: fit-content;
-    word-break: break-word;
-    border: 0;
-  }
-
-  .button-34:hover {
-    background: #ffffff;
-    box-shadow: #5E5DF0 0 10px 20px -10px;
-    color: #5f788a;
-  }
-
   #buttons li {
     display: inline;
   }
 
   .profile-banner {
+    background-color: var(--text-color);
+    color: var(--main-color);
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
   }
 
   .profile-header {
-    border: 2px solid #33333368;
+    border: 2px solid var(--main-color);
     padding: 0.5rem;
     margin-bottom: 1rem;
+    background-color: var(--text-color);
+    color: var(--main-color);
   }
 
   .profile-header .profile-footer {
     display: flex;
     align-items: center;
     justify-content: right;
+    background-color: var(--text-color);
+    color: var(--main-color);
   }
 
   .profile-header .profile-content {
     width: 100%;
+    background-color: var(--text-color);
+    color: var(--main-color);
+  }
+
+  .mode {
+    background-color: var(--main-color-nav);
+    color: var(--text-color-nav);
+    border: none;
   }
