@@ -27,4 +27,5 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
+        cd /home/runer/work/DCIScorePuller/DCIScorePuller/DCIScorePuller
         python3 manage.py test
