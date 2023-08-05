@@ -39,13 +39,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "django_tables2",
     "bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
     "users.apps.UsersConfig",
-    "django_tables2",
     "pull.apps.PullConfig",
-    "django.contrib.humanize",
 ]
 
 MIDDLEWARE = [
@@ -63,7 +63,7 @@ ROOT_URLCONF = "DCIScorePuller.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
