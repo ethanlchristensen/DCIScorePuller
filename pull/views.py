@@ -22,7 +22,10 @@ def home(request):
     # set the title
     title = "Home"
     # create the context
-    context = {"title": title}
+    context = {
+        "title": title,
+        "i_am": "home"
+    }
     # render the template
     return render(request, template_name=template, context=context)
 
@@ -37,7 +40,10 @@ def about(request):
     # get the title
     title = "About"
     # create the context
-    context = {"title": title}
+    context = {
+        "title": title,
+        "i_am": "about"
+    }
     # render template
     return render(request, template_name=template, context=context)
 
@@ -52,7 +58,10 @@ def welcome(request):
     # get the title
     title = "Welcome"
     # create the context
-    context = {"title": title}
+    context = {
+        "title": title,
+        "i_am": "welcome"
+    }
     # render the template
     return render(request=request, template_name=template, context=context)
 
@@ -68,7 +77,10 @@ def admin(request):
     # get the title
     title = "Admin"
     # create the context
-    context = {"title": title}
+    context = {
+        "title": title,
+        "i_am": "admin"
+    }
     # render out the template
     return render(request, template_name=template, context=context)
 
@@ -309,7 +321,7 @@ def show_table(request):
     return render(
         request,
         template_name=template,
-        context={"title": title, "table": table, "myFilter": myFilter},
+        context={"title": title, "table": table, "myFilter": myFilter, "i_am": "shows"},
     )
 
 
@@ -546,7 +558,7 @@ def rank_chart(request, rank_type):
     chart_data["labels"] = all_dates
 
     # create the context
-    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top, "rank_type":rank_type}
+    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top, "rank_type":rank_type, "i_am":"rankings"}
     return render(request, template_name=template, context=context)
 
 
@@ -578,11 +590,12 @@ def competition_chart(request, competition):
         RequestConfig(request).configure(table)
         # make the context
         context = {
-            "title": title,
-            "competition_names": competition_names,
-            "competition": competition,
-            "shows": shows[::-1],
-            "table": table
+            "title":title,
+            "competition_names":competition_names,
+            "competition":competition,
+            "shows":shows[::-1],
+            "table":table,
+            "i_am":"competition"
         }
         # render the template
     return render(request, template_name=template, context=context)

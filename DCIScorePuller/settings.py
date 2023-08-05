@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "users.apps.UsersConfig",
     "pull.apps.PullConfig",
+    "blog.apps.BlogConfig",
 ]
 
 MIDDLEWARE = [

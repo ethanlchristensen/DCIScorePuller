@@ -1,0 +1,42 @@
+{% extends "pull/base.html" %}
+{% load blog.extra_blog_tags %}
+{% block content %}
+<div class="blog-home-header">
+    <h2>Recent Posts</h2>
+</div>
+<hr/>
+<div class="posts">
+    {% for post in posts %}
+        <div class="blog-post">
+            <div class="blog-post-header">
+                <h4>{{ post.title }}</h4>
+            </div>
+            <div class="blog-post-content">
+                {% if post.content|length > 200 %}
+                    <p>{{ post.content|200 }} <a href="#">read more</a></p>
+                {% else %}
+                    <p>{{ post.content }}</p>
+                {% endif %}
+            </div>
+            <div class="blog-post-footer d-flex align-items-center justify-content-between">
+                <div class="blog-post-footer-left">
+                    {{ post.author }} - {{ post.date }}, {{ post.get_likes_count }} likes, {{ post.get_comments_count }} comments
+                </div>
+                <div class="blog-post-footer-right">
+                    {% if user != post.author %}
+                        {% if user not in post.user_likes.all %}
+                            <a href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
+                        {% else %}
+                            <a href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'unlike-post' post.id%}?next=blog-home">edit</a> -
+                    {% endif %}
+                    <a href="#">comment</a>
+                </div>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+</div>
+{% endblock content %}

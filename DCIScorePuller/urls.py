@@ -13,6 +13,7 @@ urlpatterns = [
         RedirectView.as_view(url=staticfiles_storage.url("pull/CACBOWROUNDCORNER.ico")),
     ),
     path("", include("pull.urls")),
+    path("", include("blog.urls")),
     path("admin/", admin.site.urls),
     path("pull/register/", user_views.register, name="register"),
     path(

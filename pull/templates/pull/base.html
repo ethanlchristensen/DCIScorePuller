@@ -27,27 +27,32 @@
   <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
       <div class="container">
-        <a class="navbar-brand mr-4" href="{% url 'pull-home' %}">DCISP</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle"
           aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav me-auto">
-            <a class="nav-item nav-link" href="{% url 'pull-home' %}">Home</a>
-            <a class="nav-item nav-link" href="{% url 'pull-about' %}">About</a>
+            <a class="nav-item nav-link{% if i_am == 'home' %} active{% endif %}" href="{% url 'pull-home' %}">Home</a>
+            <a class="nav-item nav-link{% if i_am == 'about' %} active{% endif %}" href="{% url 'pull-about' %}">About</a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'competition-chart' 'erm' %}" class="nav-item nav-link{% if i_am == 'competition' %} active{% endif %}">Competition</a>
+              <a href="{% url 'rank-chart' 'overall' %}?top=12" class="nav-item nav-link{% if i_am == 'rankings' %} active{% endif %}">Rankings</a>
+              <a href="{% url 'show-table' %}" class="nav-item nav-link{% if i_am == 'shows' %} active{% endif %}">Shows</a>
+            {% endif %}
+            <a class="nav-item nav-link{% if i_am == 'blog' %} active{% endif %}" href="{% url 'blog-home' %}">Blog</a>
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">
             {% if user.is_authenticated %}
-            {% if user.is_superuser %}
-            <a class="nav-item nav-link" href="{% url 'pull-admin' %}">Admin</a>
-            {% endif %}
-            <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+              {% if user.is_superuser %}
+                <a class="nav-item nav-link{% if i_am == 'admin' %} active{% endif %}" href="{% url 'pull-admin' %}">Admin</a>
+              {% endif %}
+              <a class="nav-item nav-link{% if i_am == 'profile' %} active{% endif %}" href="{% url 'profile' %}">Profile</a>
+              <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
             {% else %}
-            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-            <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+              <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+              <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
             {% endif %}
           </div>
         </div>

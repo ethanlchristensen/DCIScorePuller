@@ -55,5 +55,6 @@ def profile(request):
             "title": "Profile",
             "user_update_form": user_update_form,
             "profile_update_form": profile_update_form,
+            "i_am": "profile"
         }
     return render(request, "users/profile.html", context)

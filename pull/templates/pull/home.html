@@ -1,29 +1,4 @@
 {% extends "pull/base.html" %}
 {% block content %}
-<table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Option</th>
-        <th scope="col">Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td><a href="{% url 'show-table' %}" class="btn btn-primary btn-lg" role="button">Shows</a></td>
-        <td>View all the shows in a table. Sort columns by value or search for a Competition, Corp, or Date.</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td><a href="{% url 'rank-chart' 'overall' %}?top=12" class="btn btn-primary btn-lg" role="button">Rankings</a></td>
-        <td>View Corps Score or Sub Category Score rankings over time.</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td><a href="{% url 'competition-chart' 'erm' %}" class="btn btn-primary btn-lg" role="button">Competition</a></td>
-        <td colspan="3">View a specific Competition scores.</td>
-      </tr>
-    </tbody>
-  </table>
+<h3>PULL HOME AYO</h3>
 {% endblock content %}
