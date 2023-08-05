@@ -1,4 +1,5 @@
 {% extends "pull/base.html" %}
+{% load pull.chart_rank_tags %}
 {% block scripts %}
 <script>
     $(document).ready(function () {
@@ -11,50 +12,75 @@
                         '{{date}}',
                     {% endfor %}
                 ],
-                datasets: [
-                    {% for corp, corp_chart_data in chart_data.items %}
-                        {
-                            label: '{{corp_chart_data.label}}',
-                            data: [
-                                {% for group in corp_chart_data.data %}
-                                    {'x': '{{group.x}}', 'y':{{group.y}}},
-                                {% endfor %}
-                            ],
-                            borderColor: '{{corp_chart_data.color}}',
-                            backgroundColor: '{{corp_chart_data.bg_color}}'
-                        },
-                    {% endfor %}
-                ]
-            },
-            options: {
-                elements: {
-                    line: 'star',
-                },
-                title: {
-                    display: true,
-                    text: 'Top N Corps Scores Over Time'
-                }
+            datasets: [
+                {% for corp, corp_chart_data in chart_data.items %}
+                    {
+                        label: '{{corp_chart_data.label}}',
+                        data: [
+                            {% for group in corp_chart_data.data %}
+                                { 
+                                    'x': '{{group.x}}', 'y': {{ group.y}}
+                                },
+                            {% endfor %}
+                        ],
+                        borderColor: '{{corp_chart_data.color}}',
+                        backgroundColor: '{{corp_chart_data.bg_color}}'
+                    },
+                {% endfor %}
+            ]
+        },
+        options: {
+            elements: {
+                line: 'star',
+                    },
+            title: {
+                display: true,
+                    text: 'Top N {{ rank_type|SAC:"-" }} Scores Over Time'
             }
+        }
+            });
         });
-    });
 </script>
 {% endblock scripts %}
 {% block content %}
-<h3>Rankings Chart</h3>
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-      Top {{top}} Corps
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=3">3</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=5">5</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=10">10</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=12">12</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=15">15</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=20">20</a></li>
-      <li><a class="dropdown-item" href="{% url 'rank-chart'%}?top=100">All</a></li>
-    </ul>
-  </div>
-  <hr/>
+<h3>Rankings Chart - {{ rank_type|SAC:"-" }}</h3>
+<div class="options d-flex align-items-center justify-content-space-between">
+    <div class="dropdown me-2">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {{ rank_type|SAC:"-" }}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'overall' %}?top={{top}}">Overall</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'general-effect-total' %}?top={{top}}">General Effect Total</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'general-effect-one' %}?top={{top}}">General Effect One</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'general-effect-two' %}?top={{top}}">General Effect Two</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'music-total' %}?top={{top}}">Music Total</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'music-analysis' %}?top={{top}}">Music Analysis</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'music-brass' %}?top={{top}}">Music Brass</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'music-percussion' %}?top={{top}}">Music Percussion</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'visual-total' %}?top={{top}}">Visual Total</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'visual-proficiency' %}?top={{top}}">Visual Proficiency</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'visual-analysis' %}?top={{top}}">Visual Analysis</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' 'color-guard' %}?top={{top}}">Color Guard</a></li>
+        </ul>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Top {{top}} Scores
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=3">3</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=5">5</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=10">10</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=12">12</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=15">15</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=20">20</a></li>
+            <li><a class="dropdown-item" href="{% url 'rank-chart' rank_type %}?top=100">All</a></li>
+        </ul>
+    </div>
+</div>
+<hr />
 <canvas id="myChart"></canvas>
 {% endblock content %}

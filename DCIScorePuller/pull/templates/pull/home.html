@@ -16,13 +16,13 @@
       </tr>
       <tr>
         <th scope="row">2</th>
-        <td><a href="{% url 'rank-chart' %}" class="btn btn-primary btn-lg" role="button">Rankings</a></td>
+        <td><a href="{% url 'rank-chart' 'overall' %}?top=12" class="btn btn-primary btn-lg" role="button">Rankings</a></td>
         <td>View Corps Total Score rankings over time.</td>
       </tr>
       <tr>
-        <th scope="row">2</th>
+        <th scope="row">3</th>
         <td><a href="{% url 'competition-chart' 'erm' %}" class="btn btn-primary btn-lg" role="button">Competition</a></td>
-        <td colspan="2">View a specific Competition scores.</td>
+        <td colspan="3">View a specific Competition scores.</td>
       </tr>
     </tbody>
   </table>

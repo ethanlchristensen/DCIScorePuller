@@ -48,7 +48,7 @@
         {{ competition.competition_name }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        {% for comp_name in competition_names %}
+        {% for comp_name in competition_names reversed %}
         <li><a class="dropdown-item" href="{% url 'competition-chart' comp_name %}">{{ comp_name }}</a></li>
         {% endfor %}
     </ul>

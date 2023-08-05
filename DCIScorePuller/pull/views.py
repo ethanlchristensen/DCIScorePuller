@@ -360,7 +360,6 @@ def autocomplete_search(request):
                     ]
                 )
             )
-            print(comp_dates + comps + corps)
             # return the autocomplete results to suggest to user
             return JsonResponse({"status": 200, "data": corps + comps + comp_dates})
     # return nothing is no conditions were met
@@ -368,7 +367,7 @@ def autocomplete_search(request):
 
 
 @login_required
-def rank_chart(request):
+def rank_chart(request, rank_type):
     """
     View for testing charting scores
     """
@@ -438,7 +437,31 @@ def rank_chart(request):
 
     # create the data that will be used for charting
     # get the top 12 corps
-    ordered_show_corps = [show.corp.name for show in shows.order_by("total_score")]
+    if rank_type == "overall":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("total_score")]
+    elif rank_type == "general-effect-total":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_total")]
+    elif rank_type == "general-effect-one":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_one_one__total")]
+    elif rank_type == "general-effect-two":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_two_one__total")]
+    elif rank_type == "music-total":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_total")]
+    elif rank_type == "music-analysis":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_analysis__total")]
+    elif rank_type == "music-percussion":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_percussion__total")]
+    elif rank_type == "music-brass":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_brass__total")]
+    elif rank_type == "visual-total":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_total")]
+    elif rank_type == "visual-proficiency":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_proficiency__total")]
+    elif rank_type == "visual-analysis":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_analysis__total")]
+    elif rank_type == "color-guard":
+        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__color_guard__total")]
+
     top_n = []
     for corp in ordered_show_corps[::-1]:
         if corp not in top_n:
@@ -472,7 +495,32 @@ def rank_chart(request):
         dm_idx = 0
         sm_idx = 0
         dates = [show.competition.competition_date for show in corp_shows]
-        scores = [show.total_score for show in corp_shows]
+
+        if rank_type == "overall":
+            scores = [show.total_score for show in corp_shows]
+        elif rank_type == "general-effect-total":
+            scores = [show.general_effect.general_effect_total for show in corp_shows]
+        elif rank_type == "general-effect-one":
+            scores = [show.general_effect.general_effect_one_one.total for show in corp_shows]
+        elif rank_type == "general-effect-two":
+            scores = [show.general_effect.general_effect_two_one.total for show in corp_shows]
+        elif rank_type == "music-total":
+            scores = [show.music.music_total for show in corp_shows]
+        elif rank_type == "music-analysis":
+            scores = [show.music.music_analysis_one.total for show in corp_shows]
+        elif rank_type == "music-percussion":
+            scores = [show.music.music_percussion.total for show in corp_shows]
+        elif rank_type == "music-brass":
+            scores = [show.music.music_brass.total for show in corp_shows]
+        elif rank_type == "visual-total":
+            scores = [show.visual.visual_total for show in corp_shows]
+        elif rank_type == "visual-proficiency":
+            scores = [show.visual.visual_proficiency.total for show in corp_shows]
+        elif rank_type == "visual-analysis":
+            scores = [show.visual.visual_analysis.total for show in corp_shows]
+        elif rank_type == "color-guard":
+            scores = [show.visual.color_guard.total for show in corp_shows]
+
         for date in all_dates:
             if date in dates:
                 dates_main.append(dates[dm_idx])
@@ -497,7 +545,7 @@ def rank_chart(request):
     chart_data["labels"] = all_dates
 
     # create the context
-    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top}
+    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top, "rank_type":rank_type}
     return render(request, template_name=template, context=context)
 
 
@@ -512,7 +560,7 @@ def competition_chart(request, competition):
     # get the competitions
     competition_names = [comp.competition_name for comp in Competition.objects.all().order_by("competition_date")]
     if competition not in competition_names:
-        competition = competition_names[0]
+        competition = competition_names[-1]
         return redirect(reverse('competition-chart', args=(competition,)))
     # get that competition
     competition = Competition.objects.all().filter(competition_name=competition)[0]
