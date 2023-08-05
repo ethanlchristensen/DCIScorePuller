@@ -37,6 +37,7 @@ class ShowTable(tables.Table):
 
     class Meta:
         model = Show
+        fields = ["corp", "date", "competition", "general_effect", "visual", "music", "total_score"]
 
 
 class CompetitionTable(tables.Table):

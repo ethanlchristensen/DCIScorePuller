@@ -1,5 +1,6 @@
 {% extends "pull/base.html" %}
 {% load render_table from django_tables2 %}
+{% load pull.chart_rank_tags %}
 {% block scripts %}
 <script>
     $(document).ready(function () {
@@ -45,11 +46,11 @@
 <div class="dropdown">
     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
         aria-expanded="false">
-        {{ competition.competition_name }}
+        {{ competition.competition_name|SAC:"-" }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
         {% for comp_name in competition_names reversed %}
-        <li><a class="dropdown-item" href="{% url 'competition-chart' comp_name %}">{{ comp_name }}</a></li>
+        <li><a class="dropdown-item" href="{% url 'competition-chart' comp_name %}">{{ comp_name|SAC:"-" }}</a></li>
         {% endfor %}
     </ul>
 </div>

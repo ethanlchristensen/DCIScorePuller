@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito&family=Urbanist&display=swap');
 
 :root {
   /* --main-color: #df2626; */
@@ -17,7 +17,7 @@ a {
 }
 
 * {
-  font-family: 'Urbanist', sans-serif;
+  font-family: 'Nunito', sans-serif;
 }
 
 body::-webkit-scrollbar {

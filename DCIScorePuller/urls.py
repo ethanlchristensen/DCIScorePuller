@@ -4,8 +4,14 @@ from users import views as user_views
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=staticfiles_storage.url("pull/CACBOWROUNDCORNER.ico")),
+    ),
     path("", include("pull.urls")),
     path("admin/", admin.site.urls),
     path("pull/register/", user_views.register, name="register"),
