@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 
 <head>
   <!-- Required meta tags -->
@@ -36,14 +36,13 @@
           <div class="navbar-nav me-auto">
             <a class="nav-item nav-link" href="{% url 'pull-home' %}">Home</a>
             <a class="nav-item nav-link" href="{% url 'pull-about' %}">About</a>
-            {% if user.is_superuser %}
-            <a class="nav-item nav-link" href="{% url 'pull-admin' %}">Admin</a>
-            {% endif %}
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">
             {% if user.is_authenticated %}
-            <!--<button class="mode" id="mode" onclick="changeMode()">Dark-Mode</button>-->
+            {% if user.is_superuser %}
+            <a class="nav-item nav-link" href="{% url 'pull-admin' %}">Admin</a>
+            {% endif %}
             <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
             <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
             {% else %}

@@ -38,6 +38,7 @@ def about(request):
     title = "About"
     # create the context
     context = {"title": title}
+    # render template
     return render(request, template_name=template, context=context)
 
 
@@ -557,28 +558,31 @@ def competition_chart(request, competition):
 
     # get the template name
     template = "pull/chart_competition.html"
+    # default the context
+    context = None
     # get the competitions
     competition_names = [comp.competition_name for comp in Competition.objects.all().order_by("competition_date")]
-    if competition not in competition_names:
-        competition = competition_names[-1]
-        return redirect(reverse('competition-chart', args=(competition,)))
-    # get that competition
-    competition = Competition.objects.all().filter(competition_name=competition)[0]
-    # get the title
-    title = competition.competition_name
-    # get the shows for this competition
-    shows = Show.objects.all().filter(competition__key=competition.key).order_by("total_score")
-    # create a table off this queryset
-    table = CompetitionTable(shows)
-    # configure the request to handle the table
-    RequestConfig(request).configure(table)
-    # make the context
-    context = {
-        "title": title,
-        "competition_names": competition_names,
-        "competition": competition,
-        "shows": shows[::-1],
-        "table": table
-    }
-    # render the template
+    if competition_names:
+        if competition not in competition_names:
+            competition = competition_names[-1]
+            return redirect(reverse('competition-chart', args=(competition,)))
+        # get that competition
+        competition = Competition.objects.all().filter(competition_name=competition)[0]
+        # get the title
+        title = competition.competition_name
+        # get the shows for this competition
+        shows = Show.objects.all().filter(competition__key=competition.key).order_by("total_score")
+        # create a table off this queryset
+        table = CompetitionTable(shows)
+        # configure the request to handle the table
+        RequestConfig(request).configure(table)
+        # make the context
+        context = {
+            "title": title,
+            "competition_names": competition_names,
+            "competition": competition,
+            "shows": shows[::-1],
+            "table": table
+        }
+        # render the template
     return render(request, template_name=template, context=context)

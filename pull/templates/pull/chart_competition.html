@@ -54,9 +54,11 @@
     </ul>
 </div>
 <hr/>
+{% if table %}
 <div class="table">
     {% render_table table %}
 </div>
+{% endif %}
 <hr/>
 <canvas id="myChart"></canvas>
 {% endblock content %}
