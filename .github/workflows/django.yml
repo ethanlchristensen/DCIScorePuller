@@ -24,8 +24,8 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install poetry
+        poetry config virtualenvs.create false
         poetry install
-        poetry shell
     - name: Check pending migrations
       run: |
         python manage.py makemigrations --check --dry-run
