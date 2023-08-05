@@ -448,7 +448,7 @@ def rank_chart(request, rank_type):
     elif rank_type == "music-total":
         ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_total")]
     elif rank_type == "music-analysis":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_analysis__total")]
+        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_analysis_one__total")]
     elif rank_type == "music-percussion":
         ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_percussion__total")]
     elif rank_type == "music-brass":
