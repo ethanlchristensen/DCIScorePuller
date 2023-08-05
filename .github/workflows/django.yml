@@ -25,11 +25,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Change to Correct Directory
+      run: |
+        cd DCIScorePuller
     - name: Check pending migrations
       run: |
         python manage.py makemigrations --check --dry-run
         python manage.py migrate
     - name: Run Tests
       run: |
-        cd DCIScorePuller
         python3 manage.py test
