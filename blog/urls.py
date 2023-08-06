@@ -9,4 +9,5 @@ urlpatterns = [
     path("blog/post/create", view=create_post, name="create-post"),
     path("blog/post/delete/<int:post_id>", view=delete_post, name="delete-post"),
     path("blog/post/update/<int:post_id>", view=update_post, name="update-post"),
+    path("blog/post/view/<int:post_id>", view=view_post, name="view-post"),
 ]
