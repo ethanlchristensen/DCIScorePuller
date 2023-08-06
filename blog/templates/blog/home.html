@@ -1,8 +1,9 @@
 {% extends "pull/base.html" %}
 {% load blog.extra_blog_tags %}
 {% block content %}
-<div class="blog-home-header">
+<div class="blog-home-header d-flex align-items-center justify-content-between">
     <h2>Recent Posts</h2>
+    <a href="{% url 'create-post' %}">+ Create Post</a>
 </div>
 <hr/>
 <div class="posts">
@@ -30,7 +31,8 @@
                             <a href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
                         {% endif %}
                     {% else %}
-                        <a href="{% url 'unlike-post' post.id%}?next=blog-home">edit</a> -
+                        <a href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
+                        <a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> -
                     {% endif %}
                     <a href="#">comment</a>
                 </div>
