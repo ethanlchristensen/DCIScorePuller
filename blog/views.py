@@ -17,7 +17,7 @@ def home(request):
     # get the title
     title = "Blog Home"
     # get the posts
-    posts = Post.objects.all().order_by("-date")
+    posts = Post.objects.all().order_by("-created_date")
     # get your likes
     likes = PostLike.objects.filter(user=request.user)
     # create the context
@@ -68,6 +68,10 @@ def create_post(request):
 def delete_post(request, post_id):
 
     next = request.GET.get("next")
+
+    # did we come from a view-post url?
+    prev_post_id = request.GET.get("post_id")
+
     post = Post.objects.get(id=post_id)
 
     if post:
@@ -75,8 +79,11 @@ def delete_post(request, post_id):
         messages.success(request, "Post was successfully deleted")
     else:
         messages.warning(request, "Post does not exist, or was already deleted")
-    
-    return redirect(next)
+
+    if prev_post_id:
+        return redirect(reverse(next, args=(prev_post_id,)))
+    else:
+        return redirect(next)
 
 @login_required
 def update_post(request, post_id):
@@ -96,6 +103,9 @@ def update_post(request, post_id):
 
     next = request.GET.get("next")
 
+    # did we come from a view-post url?
+    prev_post_id = request.GET.get("post_id")
+
     if request.method == "POST":
         form = UpdatePostForm(request.POST)
         if form.is_valid():
@@ -107,7 +117,6 @@ def update_post(request, post_id):
                 )
             except Exception as exception:
                 messages.warning(request, "A problem occured and the Post could not be updated")
-                return redirect(next)
     else:
         post = Post.objects.get(id=post_id)
         if request.user == post.author:
@@ -116,13 +125,18 @@ def update_post(request, post_id):
             context["form"] = form
             return render(request, template_name=template, context=context)
         
-    return redirect(next)
-
+    if prev_post_id:
+        return redirect(reverse(next, args=(prev_post_id,)))
+    else:
+        return redirect(next)
 
 @login_required
 def like_unlike_post(request, post_id):
 
     next = request.GET.get("next")
+
+    # did we come from a view-post url?
+    prev_post_id = request.GET.get("post_id")
 
     post = Post.objects.get(id=post_id)
     like, like_created = PostLike.objects.get_or_create(user=request.user, post=post)
@@ -132,5 +146,29 @@ def like_unlike_post(request, post_id):
     else:
         post.user_likes.add(request.user)
     
-    return redirect(next)
+    if prev_post_id:
+        return redirect(reverse(next, args=(prev_post_id,)))
+    else:
+        return redirect(next)
     
+@login_required
+def view_post(request, post_id):
+    """
+    View to render out the view post template
+    """
+
+    # get the template
+    template = "blog/view_post.html"
+    # get the title
+    title = "View Blog Post"
+    # get the post
+    post = Post.objects.filter(id=post_id).first()
+    # create the context
+    context = {
+        "title": title,
+        "i_am": "blog",
+        "post": post
+    }
+    # render the template
+    return render(request, template_name=template, context=context)
+

@@ -21,20 +21,22 @@
             </div>
             <div class="blog-post-footer d-flex align-items-center justify-content-between">
                 <div class="blog-post-footer-left">
-                    {{ post.author }} - {{ post.date }}, {{ post.get_likes_count }} likes, {{ post.get_comments_count }} comments
+                    {{ post.author }} - {{ post.created_date }}, 
+                    {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
+                    {{ post.get_comments_count }} comments
                 </div>
                 <div class="blog-post-footer-right">
                     {% if user != post.author %}
                         {% if user not in post.user_likes.all %}
-                            <a href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
+                            <a class="link-success" href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
                         {% else %}
-                            <a href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
+                            <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
                         {% endif %}
                     {% else %}
-                        <a href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
+                        <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
                         <a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> -
                     {% endif %}
-                    <a href="#">comment</a>
+                    <a href="{% url 'view-post' post.id%}">comment</a>
                 </div>
             </div>
         </div>

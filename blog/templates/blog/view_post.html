@@ -1,0 +1,30 @@
+{% extends "pull/base.html" %}
+{% block content %}
+<div class="blog-post">
+    <div class="blog-post-header">
+        <h4>{{ post.title }}</h4>
+    </div>
+    <div class="blog-post-content">
+        <p>{{ post.content }}</p>
+    </div>
+    <div class="blog-post-footer d-flex align-items-center justify-content-between">
+        <div class="blog-post-footer-left">
+            {{ post.author }} - {{ post.created_date }}, 
+            {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
+            {{ post.get_comments_count }} comments
+        </div>
+        <div class="blog-post-footer-right">
+            {% if user != post.author %}
+                {% if user not in post.user_likes.all %}
+                    <a class="link-success" href="{% url 'like-post' post.id%}?next=view-post&post_id={{ post.id }}">like</a>
+                {% else %}
+                    <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=view-post&post_id={{ post.id }}">dislike</a>
+                {% endif %}
+            {% else %}
+                <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> - 
+                <a href="{% url 'update-post' post.id%}?next=view-post&post_id={{ post.id }}">edit</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
