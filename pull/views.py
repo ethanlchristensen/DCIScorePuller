@@ -1,13 +1,14 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import *
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django_tables2 import RequestConfig
+
 from .filters import *
+from .models import *
 from .tables import *
 from .utils.puller import DciScorePuller
-from django_tables2 import RequestConfig
-from django.http import JsonResponse
 
 
 # Create your views here.
@@ -22,10 +23,7 @@ def home(request):
     # set the title
     title = "Home"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "home"
-    }
+    context = {"title": title, "i_am": "home"}
     # render the template
     return render(request, template_name=template, context=context)
 
@@ -40,10 +38,7 @@ def about(request):
     # get the title
     title = "About"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "about"
-    }
+    context = {"title": title, "i_am": "about"}
     # render template
     return render(request, template_name=template, context=context)
 
@@ -58,10 +53,7 @@ def welcome(request):
     # get the title
     title = "Welcome"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "welcome"
-    }
+    context = {"title": title, "i_am": "welcome"}
     # render the template
     return render(request=request, template_name=template, context=context)
 
@@ -77,10 +69,7 @@ def admin(request):
     # get the title
     title = "Admin"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "admin"
-    }
+    context = {"title": title, "i_am": "admin"}
     # render out the template
     return render(request, template_name=template, context=context)
 
@@ -345,9 +334,7 @@ def autocomplete_search(request):
                 set(
                     [
                         show.corp.name
-                        for show in Show.objects.all().filter(
-                            corp__name__icontains=query
-                        )
+                        for show in Show.objects.all().filter(corp__name__icontains=query)
                     ]
                 )
             )
@@ -453,27 +440,47 @@ def rank_chart(request, rank_type):
     if rank_type == "overall":
         ordered_show_corps = [show.corp.name for show in shows.order_by("total_score")]
     elif rank_type == "general-effect-total":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("general_effect__general_effect_total")
+        ]
     elif rank_type == "general-effect-one":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_one_one__total")]
+        ordered_show_corps = [
+            show.corp.name
+            for show in shows.order_by("general_effect__general_effect_one_one__total")
+        ]
     elif rank_type == "general-effect-two":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("general_effect__general_effect_two_one__total")]
+        ordered_show_corps = [
+            show.corp.name
+            for show in shows.order_by("general_effect__general_effect_two_one__total")
+        ]
     elif rank_type == "music-total":
         ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_total")]
     elif rank_type == "music-analysis":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_analysis_one__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("music__music_analysis_one__total")
+        ]
     elif rank_type == "music-percussion":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_percussion__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("music__music_percussion__total")
+        ]
     elif rank_type == "music-brass":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_brass__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("music__music_brass__total")
+        ]
     elif rank_type == "visual-total":
         ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_total")]
     elif rank_type == "visual-proficiency":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_proficiency__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("visual__visual_proficiency__total")
+        ]
     elif rank_type == "visual-analysis":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_analysis__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("visual__visual_analysis__total")
+        ]
     elif rank_type == "color-guard":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__color_guard__total")]
+        ordered_show_corps = [
+            show.corp.name for show in shows.order_by("visual__color_guard__total")
+        ]
 
     top_n = []
     for corp in ordered_show_corps[::-1]:
@@ -487,21 +494,17 @@ def rank_chart(request, rank_type):
     chart_data = {}
     all_dates = []
     for i, corp in enumerate(top_n):
-        corp_shows = shows.filter(corp__name=corp).order_by(
-            "competition__competition_date"
-        )
+        corp_shows = shows.filter(corp__name=corp).order_by("competition__competition_date")
         dates = [show.competition.competition_date for show in corp_shows]
         for date in dates:
             if date not in all_dates:
                 all_dates.append(date)
-    
+
     all_dates = sorted(all_dates)
 
     for i, corp in enumerate(top_n):
         chart_data[corp] = {}
-        corp_shows = shows.filter(corp__name=corp).order_by(
-            "competition__competition_date"
-        )
+        corp_shows = shows.filter(corp__name=corp).order_by("competition__competition_date")
         chart_data[corp]["label"] = corp
         dates_main = []
         scores_main = []
@@ -546,19 +549,24 @@ def rank_chart(request, rank_type):
                     scores_main.append(scores[sm_idx])
                 except IndexError:
                     dates_main.append(date)
-                    scores_main.append(scores[sm_idx-1])
+                    scores_main.append(scores[sm_idx - 1])
         chart_data[corp]["data"] = [
             {"x": date, "y": score} for date, score in zip(dates_main, scores_main)
         ]
         chart_data[corp]["color"] = top_n_colors[i % len(top_n_colors)]
-        chart_data[corp]["bg_color"] = top_n_background_colors[
-            i % len(top_n_background_colors)
-        ]
+        chart_data[corp]["bg_color"] = top_n_background_colors[i % len(top_n_background_colors)]
 
     chart_data["labels"] = all_dates
 
     # create the context
-    context = {"title": title, "shows": shows, "chart_data": chart_data, "top":top, "rank_type":rank_type, "i_am":"rankings"}
+    context = {
+        "title": title,
+        "shows": shows,
+        "chart_data": chart_data,
+        "top": top,
+        "rank_type": rank_type,
+        "i_am": "rankings",
+    }
     return render(request, template_name=template, context=context)
 
 
@@ -573,11 +581,13 @@ def competition_chart(request, competition):
     # default the context
     context = None
     # get the competitions
-    competition_names = [comp.competition_name for comp in Competition.objects.all().order_by("competition_date")]
+    competition_names = [
+        comp.competition_name for comp in Competition.objects.all().order_by("competition_date")
+    ]
     if competition_names:
         if competition not in competition_names:
             competition = competition_names[-1]
-            return redirect(reverse('competition-chart', args=(competition,)))
+            return redirect(reverse("competition-chart", args=(competition,)))
         # get that competition
         competition = Competition.objects.all().filter(competition_name=competition)[0]
         # get the title
@@ -590,12 +600,12 @@ def competition_chart(request, competition):
         RequestConfig(request).configure(table)
         # make the context
         context = {
-            "title":title,
-            "competition_names":competition_names,
-            "competition":competition,
-            "shows":shows[::-1],
-            "table":table,
-            "i_am":"competition"
+            "title": title,
+            "competition_names": competition_names,
+            "competition": competition,
+            "shows": shows[::-1],
+            "table": table,
+            "i_am": "competition",
         }
         # render the template
     return render(request, template_name=template, context=context)

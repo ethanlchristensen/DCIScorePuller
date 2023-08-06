@@ -6,41 +6,45 @@
     <a href="{% url 'create-post' %}">+ Create Post</a>
 </div>
 <hr/>
-<div class="posts">
-    {% for post in posts %}
-        <div class="blog-post">
-            <div class="blog-post-header">
-                <h4>{{ post.title }}</h4>
-            </div>
-            <div class="blog-post-content">
-                {% if post.content|length > 200 %}
-                    <p>{{ post.content|200 }} <a href="#">read more</a></p>
-                {% else %}
-                    <p>{{ post.content }}</p>
-                {% endif %}
-            </div>
-            <div class="blog-post-footer d-flex align-items-center justify-content-between">
-                <div class="blog-post-footer-left">
-                    {{ post.author }} - {{ post.created_date }}, 
-                    {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
-                    {{ post.get_comments_count }} comments
+{% if posts %}
+    <div class="posts">
+        {% for post in posts %}
+            <div class="blog-post">
+                <div class="blog-post-header">
+                    <h4>{{ post.title }}</h4>
                 </div>
-                <div class="blog-post-footer-right">
-                    {% if user != post.author %}
-                        {% if user not in post.user_likes.all %}
-                            <a class="link-success" href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
-                        {% else %}
-                            <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
-                        {% endif %}
+                <div class="blog-post-content">
+                    {% if post.content|length > 200 %}
+                        <p>{{ post.content|200 }} <a href="#">read more</a></p>
                     {% else %}
-                        <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
-                        <a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> -
+                        <p>{{ post.content }}</p>
                     {% endif %}
-                    <a href="{% url 'view-post' post.id%}">comment</a>
+                </div>
+                <div class="blog-post-footer d-flex align-items-center justify-content-between">
+                    <div class="blog-post-footer-left">
+                        {{ post.author }} - {{ post.created_date }}, 
+                        {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
+                        {{ post.get_comments_count }} comments
+                    </div>
+                    <div class="blog-post-footer-right">
+                        {% if user != post.author %}
+                            {% if user not in post.user_likes.all %}
+                                <a class="link-success" href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
+                            {% else %}
+                                <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
+                            {% endif %}
+                        {% else %}
+                            <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
+                            <a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> -
+                        {% endif %}
+                        <a href="{% url 'view-post' post.id%}">comment</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <br>
-    {% endfor %}
-</div>
+            <br>
+        {% endfor %}
+    </div>
+{% else %}
+    <h3>no posts to show :(</h3>
+{% endif %}
 {% endblock content %}

@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from .models import Post, PostLike, PostComment
-from .forms import CreatePostForm, UpdatePostForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render, HttpResponseRedirect
+from django.urls import reverse
+
+from .forms import CommentForm, CreatePostForm, UpdatePostForm, UpdateCommentForm
+from .models import Post, PostComment, PostLike
+
 
 @login_required
 def home(request):
@@ -21,14 +22,10 @@ def home(request):
     # get your likes
     likes = PostLike.objects.filter(user=request.user)
     # create the context
-    context = {
-        "title": title,
-        "posts": posts,
-        "likes": likes,
-        "i_am": "blog"
-    }
+    context = {"title": title, "posts": posts, "likes": likes, "i_am": "blog"}
     # render the tempalte
     return render(request, template_name=template, context=context)
+
 
 @login_required
 def create_post(request):
@@ -41,21 +38,18 @@ def create_post(request):
     # get the title
     title = "Create Blog Post"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "blog"
-    }
-    
+    context = {"title": title, "i_am": "blog"}
+
     if request.method == "POST":
-        form =  CreatePostForm(request.POST)
+        form = CreatePostForm(request.POST)
         if form.is_valid():
             post = Post.objects.create(
-                author = request.user,
-                title = form.cleaned_data.get("title"),
-                content = form.cleaned_data.get("content"),
+                author=request.user,
+                title=form.cleaned_data.get("title"),
+                content=form.cleaned_data.get("content"),
             )
 
-            return  redirect("blog-home")
+            return redirect("blog-home")
     else:
         form = CreatePostForm()
 
@@ -64,9 +58,9 @@ def create_post(request):
     # render the template
     return render(request, template_name=template, context=context)
 
+
 @login_required
 def delete_post(request, post_id):
-
     next = request.GET.get("next")
 
     # did we come from a view-post url?
@@ -85,6 +79,7 @@ def delete_post(request, post_id):
     else:
         return redirect(next)
 
+
 @login_required
 def update_post(request, post_id):
     """
@@ -96,10 +91,7 @@ def update_post(request, post_id):
     # get the title
     title = "Update Blog Post"
     # create the context
-    context = {
-        "title": title,
-        "i_am": "blog"
-    }
+    context = {"title": title, "i_am": "blog"}
 
     next = request.GET.get("next")
 
@@ -111,10 +103,10 @@ def update_post(request, post_id):
         if form.is_valid():
             try:
                 post = Post.objects.filter(id=post_id)
-                post.update(
-                    title=form.cleaned_data['title'],
-                    content=form.cleaned_data['content']
-                )
+                post.update(title=form.cleaned_data["title"], content=form.cleaned_data["content"])
+                # to update last_updated_date . . .
+                post.first().update()
+                messages.info(request, "Post was updated successfully")
             except Exception as exception:
                 messages.warning(request, "A problem occured and the Post could not be updated")
     else:
@@ -124,15 +116,15 @@ def update_post(request, post_id):
             context["post_id"] = post_id
             context["form"] = form
             return render(request, template_name=template, context=context)
-        
+
     if prev_post_id:
         return redirect(reverse(next, args=(prev_post_id,)))
     else:
         return redirect(next)
 
+
 @login_required
 def like_unlike_post(request, post_id):
-
     next = request.GET.get("next")
 
     # did we come from a view-post url?
@@ -145,12 +137,13 @@ def like_unlike_post(request, post_id):
         post.user_likes.remove(request.user)
     else:
         post.user_likes.add(request.user)
-    
+
     if prev_post_id:
         return redirect(reverse(next, args=(prev_post_id,)))
     else:
         return redirect(next)
-    
+
+
 @login_required
 def view_post(request, post_id):
     """
@@ -163,12 +156,90 @@ def view_post(request, post_id):
     title = "View Blog Post"
     # get the post
     post = Post.objects.filter(id=post_id).first()
+    # comment form
+    comment_form = CommentForm()
+    # get the existing comments
+    comment_objects = PostComment.objects.filter(post=post).order_by("-last_updated_date")
     # create the context
     context = {
         "title": title,
         "i_am": "blog",
-        "post": post
+        "post": post,
+        "comment_form": comment_form,
+        "comments": comment_objects,
     }
+
     # render the template
     return render(request, template_name=template, context=context)
+
+
+@login_required
+def add_comment(request, post_id):
+    if request.method == "POST":
+        comment = CommentForm(request.POST)
+
+        if comment.is_valid():
+            post = Post.objects.filter(id=post_id).first()
+
+            new_comment = PostComment(
+                user=request.user, post=post, comment=comment.cleaned_data.get("comment")
+            )
+
+            new_comment.save()
+
+        return redirect(reverse("view-post", args=(post_id,)))
+
+@login_required
+def get_comment_data_modal(request, post_id, comment_id):
+    comment = PostComment.objects.filter(id=comment_id).first()
+    update_comment_form = UpdateCommentForm(instance=comment)
+
+    # get the template
+    template = "blog/view_post.html"
+    # get the title
+    title = "View Blog Post"
+    # get the post
+    post = Post.objects.filter(id=post_id).first()
+    # comment form
+    comment_form = CommentForm()
+    # get the existing comments
+    comment_objects = PostComment.objects.filter(post=post).order_by("-last_updated_date")
+    # create the context
+    context = {
+        "title": title,
+        "i_am": "blog",
+        "post": post,
+        "comment_form": comment_form,
+        "comments": comment_objects,
+        "update_comment_form": update_comment_form,
+        "update_comment_id": comment_id
+    }
+
+    # render the template
+    return render(request, template_name=template, context=context)
+
+@login_required
+def update_comment(request, post_id, comment_id):
+    if request.method == "POST":
+        form = UpdateCommentForm(request.POST)
+
+        if form.is_valid():
+            comment = PostComment.objects.filter(id=comment_id)
+            comment.update(
+                comment = form.cleaned_data.get("comment")
+            )
+            comment.first().save()
+
+            return redirect(reverse("view-post", args=(post_id,)))
+
+@login_required
+def delete_comment(request, post_id, comment_id):
+    comment = PostComment.objects.filter(id=comment_id)
+
+    if not comment.first().user == request.user:
+        messages.error(request, "This is not your comment to delete")
+        return redirect(reverse("view-post", args=(post_id,)))
+
+    comment.delete()
+    return redirect(reverse("view-post", args=(post_id,)))
 

@@ -1,4 +1,14 @@
 {% extends "pull/base.html" %}
+{% load crispy_forms_tags %}
+{% block scripts %}
+{% if update_comment_form %}
+<script>
+    $(document).ready(function(){
+       $('#update-comment-modal').modal('show');
+    });
+</script>
+{% endif %}
+{% endblock scripts %}
 {% block content %}
 <div class="blog-post">
     <div class="blog-post-header">
@@ -9,22 +19,88 @@
     </div>
     <div class="blog-post-footer d-flex align-items-center justify-content-between">
         <div class="blog-post-footer-left">
-            {{ post.author }} - {{ post.created_date }}, 
-            {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
-            {{ post.get_comments_count }} comments
+            {{ post.author }} - {{ post.created_date }},
+            {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %},
+            {{ post.get_comments_count }} comment{% if post.get_comments_count != 1%}s{% endif %}
         </div>
         <div class="blog-post-footer-right">
             {% if user != post.author %}
-                {% if user not in post.user_likes.all %}
-                    <a class="link-success" href="{% url 'like-post' post.id%}?next=view-post&post_id={{ post.id }}">like</a>
-                {% else %}
-                    <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=view-post&post_id={{ post.id }}">dislike</a>
-                {% endif %}
+            {% if user not in post.user_likes.all %}
+            <a class="link-success" href="{% url 'like-post' post.id%}?next=view-post&post_id={{ post.id }}">like</a>
             {% else %}
-                <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> - 
-                <a href="{% url 'update-post' post.id%}?next=view-post&post_id={{ post.id }}">edit</a>
+            <a class="link-danger"
+                href="{% url 'unlike-post' post.id%}?next=view-post&post_id={{ post.id }}">dislike</a>
+            {% endif %}
+            {% else %}
+            <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
+            <a href="{% url 'update-post' post.id%}?next=view-post&post_id={{ post.id }}">edit</a>
             {% endif %}
         </div>
     </div>
+</div>
+<hr />
+<div class="join-the-conversation">
+    <div class="add-comment">
+        <h5>Join the Conversation!</h5>
+        <form method="POST" action="{% url 'add-comment' post.id %}">
+            {% csrf_token %} {{ comment_form|crispy }}
+            <div class="form-group">
+                <button class="btn btn-outline-success hidden" type="submit" hidden>
+                    Add Comment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="comments">
+    {% for comment in comments %}
+    <div class="comment">
+        <div class="comment-header{%if comment.user == user %} you{% endif %} d-flex align-items-center justify-content-between">
+            <div>{{ comment.user }}</div>
+            <div>
+                {% if comment.created_date != comment.last_updated_date %}
+                    last updated 
+                {% endif %}
+                {{ comment.last_updated_date }}
+            </div>
+        </div>
+        <div class="comment-content">
+            <div>{{ comment.comment }}</div>
+        </div>
+        <div class="comment-footer d-flex align-items-center justify-content-end">
+            
+            {% if comment.user == user %}
+                <a href="{% url 'get-modal-data' post.id comment.id %}">edit</a> - 
+                <a class="link-danger" href="{% url 'delete-comment' post.id comment.id %}">delete</a>
+            {% endif %}
+        </div>
+    </div>
+    <br />
+    {% if update_comment_form and comment.id == update_comment_id %}
+        <div class="modal fade" id="update-comment-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{% url 'update-comment' post.id comment.id%}">
+                            {% csrf_token %} {{ update_comment_form|crispy }}
+                            <div class="form-group">
+                            <button class="btn btn-outline-success" type="submit">
+                                Update Comment
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endfor %}
 </div>
 {% endblock content %}

@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.timezone import now
 from django.utils import timezone as dut
 
 
@@ -19,9 +18,7 @@ class Corp(models.Model):
 class Competition(models.Model):
     key = models.AutoField(primary_key=True)
     competition_name = models.TextField(default="No Competition Name Provided")
-    competition_name_original = models.TextField(
-        default="No Original Competition Name Provided"
-    )
+    competition_name_original = models.TextField(default="No Original Competition Name Provided")
     competition_date = models.DateField(default=dut.now)
     competition_date_as_string = models.TextField(default="")
 
@@ -81,9 +78,7 @@ class GeneralEffect(models.Model):
         related_name="general_effect_two_two",
         null=True,
     )
-    general_effect_total = models.DecimalField(
-        default=0.0, decimal_places=3, max_digits=6
-    )
+    general_effect_total = models.DecimalField(default=0.0, decimal_places=3, max_digits=6)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
