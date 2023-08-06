@@ -6,11 +6,10 @@ from django.utils.timezone import now
 
 class Post(models.Model):
     id = models.AutoField(primary_key=True)
-    date = DateTimeField(default=now)
+    date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
     title = TextField(default='')
     content = TextField(default='')
-    comments = IntegerField(default=0)
     user_likes = models.ManyToManyField(User, blank=True, related_name="user_likes")
     user_comments = models.ManyToManyField(User, blank=True, related_name="user_comments")
 
