@@ -5,8 +5,9 @@
   <form action="" method="POST">
     {% csrf_token %}
     {{ form|crispy }}
-    <div class="form-group">
-      <button class="btn btn-outline-success" type="submit">Create Post</button>
+    <div class="form-group d-flex align-items-center justify-content-between">
+      <button class="btn btn-outline-success create-post-btn" type="submit">Create Post</button>
+      <a href="{% url 'blog-home' %}" class="link-danger">Cancel</a>
     </div>
   </form>
 </div>

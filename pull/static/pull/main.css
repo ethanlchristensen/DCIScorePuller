@@ -11,9 +11,11 @@
   --secondary-color: #76abff;
 
   --success: #56b46c;
+  --success-2: #71dd8b;
   --info: #237bef;
   --warning: #fafa32;
   --error: #ff0000;
+  --error-2: #fd3535;
 }
 
 a {
@@ -277,4 +279,52 @@ body {
 
   .you {
     background-color: var(--secondary-color);
+  }
+
+  .btn {
+    border-radius: 0 !important;
+  }
+
+  .btn-outline-danger {
+    border: 1px solid var(--error) !important;
+  }
+
+  .btn-outline-danger:hover {
+    color: var(--main-color) !important;
+    background-color: var(--error-2) !important;
+  }
+
+  .btn-outline-success {
+    border: 1px solid var(--success) !important;
+  }
+
+  .btn-outline-success:hover {
+    color: var(--main-color) !important;
+    background-color: var(--success) !important;
+  }
+
+  .update-post-btn {
+    border: 0 !important;
+    color: var(--success) !important;
+  }
+
+  .update-post-btn:hover {
+    background-color: var(--main-color) !important;
+    border: 0 !important;
+    color: var(--success-2) !important;
+  }
+
+  .create-post-btn {
+    border: 0 !important;
+    color: var(--success) !important;
+  }
+
+  .create-post-btn:hover {
+    background-color: var(--main-color) !important;
+    border: 0 !important;
+    color: var(--success-2) !important;
+  }
+
+  .blog-post-header {
+    padding-left: 0.25rem;
   }

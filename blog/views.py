@@ -26,7 +26,6 @@ def home(request):
     # render the tempalte
     return render(request, template_name=template, context=context)
 
-
 @login_required
 def create_post(request):
     """
@@ -58,7 +57,6 @@ def create_post(request):
     # render the template
     return render(request, template_name=template, context=context)
 
-
 @login_required
 def delete_post(request, post_id):
     next = request.GET.get("next")
@@ -78,7 +76,6 @@ def delete_post(request, post_id):
         return redirect(reverse(next, args=(prev_post_id,)))
     else:
         return redirect(next)
-
 
 @login_required
 def update_post(request, post_id):
@@ -105,7 +102,7 @@ def update_post(request, post_id):
                 post = Post.objects.filter(id=post_id)
                 post.update(title=form.cleaned_data["title"], content=form.cleaned_data["content"])
                 # to update last_updated_date . . .
-                post.first().update()
+                post.first().save()
                 messages.info(request, "Post was updated successfully")
             except Exception as exception:
                 messages.warning(request, "A problem occured and the Post could not be updated")
@@ -121,7 +118,6 @@ def update_post(request, post_id):
         return redirect(reverse(next, args=(prev_post_id,)))
     else:
         return redirect(next)
-
 
 @login_required
 def like_unlike_post(request, post_id):
@@ -142,7 +138,6 @@ def like_unlike_post(request, post_id):
         return redirect(reverse(next, args=(prev_post_id,)))
     else:
         return redirect(next)
-
 
 @login_required
 def view_post(request, post_id):
@@ -171,7 +166,6 @@ def view_post(request, post_id):
 
     # render the template
     return render(request, template_name=template, context=context)
-
 
 @login_required
 def add_comment(request, post_id):

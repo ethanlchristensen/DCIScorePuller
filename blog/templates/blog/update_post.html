@@ -1,12 +1,21 @@
 {% extends "pull/base.html" %}
 {% load crispy_forms_tags %}
+{% block script %}
+<script>
+function sumbitForm() {
+  console.log("YUP");
+  document.getElementById("update-post-form").submit();
+}
+</script>
+{% endblock script %}
 {% block content %}
 <div class="update-post">
-  <form action="" method="POST">
+  <form id="update-post-form" method="POST">
     {% csrf_token %}
     {{ form|crispy }}
-    <div class="form-group">
-      <button class="btn btn-outline-success" type="submit">Update Post</button>
+    <div class="form-group d-flex align-items-center justify-content-between">
+      <button class="btn btn-outline-success update-post-btn" type="submit">Update</button>
+      <a href="{% url 'view-post' post_id %}" class="link-danger">Cancel</a>
     </div>
   </form>
 </div>

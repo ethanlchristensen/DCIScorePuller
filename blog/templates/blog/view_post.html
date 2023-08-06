@@ -10,6 +10,7 @@
 {% endif %}
 {% endblock scripts %}
 {% block content %}
+<h5><a href="{% url 'blog-home' %}">back</a></h5>
 <div class="blog-post">
     <div class="blog-post-header">
         <h4>{{ post.title }}</h4>
@@ -69,10 +70,11 @@
             <div>{{ comment.comment }}</div>
         </div>
         <div class="comment-footer d-flex align-items-center justify-content-end">
-            
             {% if comment.user == user %}
-                <a href="{% url 'get-modal-data' post.id comment.id %}">edit</a> - 
-                <a class="link-danger" href="{% url 'delete-comment' post.id comment.id %}">delete</a>
+            <div class="comment-footer-right">
+                <a class="link-danger" href="{% url 'delete-comment' post.id comment.id %}">delete</a> -  
+                <a href="{% url 'get-modal-data' post.id comment.id %}">edit</a>
+            </div>
             {% endif %}
         </div>
     </div>
