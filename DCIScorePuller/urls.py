@@ -1,11 +1,12 @@
-from django.contrib import admin
-from django.contrib.auth import views as auth_views
-from users import views as user_views
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.urls import include, path
 from django.views.generic.base import RedirectView
+
+from users import views as user_views
 
 urlpatterns = [
     path(
@@ -28,9 +29,7 @@ urlpatterns = [
     ),
     path(
         "pull/password-reset",
-        view=auth_views.PasswordResetView.as_view(
-            template_name="users/password_reset.html"
-        ),
+        view=auth_views.PasswordResetView.as_view(template_name="users/password_reset.html"),
         name="password-reset",
     ),
     path(

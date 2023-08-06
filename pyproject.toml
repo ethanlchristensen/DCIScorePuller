@@ -21,7 +21,58 @@ crispy-bootstrap5 = "^0.7"
 Pillow = "^9.4.0"
 pytest-django = "^4.5.2"
 html5lib = "^1.1"
+ruff = "^0.0.282"
+djlint = "^1.32.1"
+pylint = "^2.17.5"
+autoflake = "^2.2.0"
 
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+force-exclude = '''
+(
+    /(
+        \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | migrations
+    )/
+    | chart_competition.html
+    | chart_rank.html
+)
+'''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "cactus.settings"
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.ruff]
+exclude = [".venv"]
+line-length = 100
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+ignore_missing_imports = "True"
+
+[tool.django-stubs]
+django_settings_module = "cactus.settings"
+strict_settings = "True"
+
+[tool.djlint]
+ignore = "H031,H030"
+profile = "django"
+blank_line_after_tag = "load,extends,include"
+blank_line_before_tag = "load,extends,include"
+close_void_tags="True"
+
+[tool.autoflake]
+imports = ["django", "requests", "urllib3"]
 
 [build-system]
 requires = ["poetry-core"]

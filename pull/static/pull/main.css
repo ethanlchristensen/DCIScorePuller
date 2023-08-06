@@ -9,6 +9,11 @@
   --main-color: #ffffff;
   --text-color: #333;
   --secondary-color: #76abff;
+
+  --success: #56b46c;
+  --info: #237bef;
+  --warning: #fafa32;
+  --error: #ff0000;
 }
 
 a {
@@ -219,4 +224,57 @@ body {
   .blog-post-footer {
     padding-left: 0.25rem;
     padding-right: 0.25rem;
+  }
+
+  .alert {
+    border-radius: 0 !important;
+  }
+
+  .alert-success {
+    background: var(--main-color) !important;
+    border: 1px solid var(--success) !important;
+    color: var(--text-color) !important;
+  }
+
+  .alert-info {
+    background: var(--main-color) !important;
+    border: 1px solid var(--info) !important;
+    color: var(--text-color) !important;
+  }
+
+  .alert-warning {
+    background: var(--main-color) !important;
+    border: 1px solid var(--warning) !important;
+    color: var(--text-color) !important;
+  }
+
+  .alert-error {
+    background: var(--main-color) !important;
+    border: 1px solid var(--error) !important;
+    color: var(--text-color) !important;
+  }
+
+  .comment {
+    border: 1px solid var(--text-color);
+  }
+
+  .comment-header {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    background-color: var(--text-color);
+    color: var(--main-color);
+  }
+
+  .comment-content {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .comment-footer {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .you {
+    background-color: var(--secondary-color);
   }

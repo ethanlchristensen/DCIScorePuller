@@ -1,6 +1,7 @@
 import django_tables2 as tables
-from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+
 from .filters import ShowFilter
 from .models import *
 
@@ -28,9 +29,7 @@ class ShowTable(tables.Table):
         order_by=("competition.competition_date"),
     )
     corp = tables.Column()
-    general_effect = GeneralEffectTotal(
-        order_by=("general_effect.general_effect_total")
-    )
+    general_effect = GeneralEffectTotal(order_by=("general_effect.general_effect_total"))
     visual = VisualTotal(order_by=("visual.visual_total"))
     music = MusicTotal(order_by=("music.music_total"))
     total_score = tables.Column()
@@ -42,16 +41,14 @@ class ShowTable(tables.Table):
 
 class CompetitionTable(tables.Table):
     corp = tables.Column()
-    general_effect = GeneralEffectTotal(
-        order_by=("general_effect.general_effect_total")
-    )
+    general_effect = GeneralEffectTotal(order_by=("general_effect.general_effect_total"))
     visual = VisualTotal(order_by=("visual.visual_total"))
     music = MusicTotal(order_by=("music.music_total"))
     total_score = tables.Column()
 
     class Meta:
         model = Show
-        fields = ['corp', 'general_effect', 'visual', 'music', 'total_score']
+        fields = ["corp", "general_effect", "visual", "music", "total_score"]
 
 
 class FilteredShowView(SingleTableMixin, FilterView):

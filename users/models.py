@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from PIL import Image
 
 
@@ -10,12 +10,8 @@ class Profile(models.Model):
     VISIBILITY_CHOICES = ((PUBLIC, "Public"), (PRIVATE, "Private"))
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(
-        default="profile_pics/default.png", upload_to="profile_pics"
-    )
-    visibility = models.CharField(
-        max_length=10, default="PRIVATE", choices=VISIBILITY_CHOICES
-    )
+    image = models.ImageField(default="profile_pics/default.png", upload_to="profile_pics")
+    visibility = models.CharField(max_length=10, default="PRIVATE", choices=VISIBILITY_CHOICES)
     bio = models.TextField(default="")
 
     def __str__(self):

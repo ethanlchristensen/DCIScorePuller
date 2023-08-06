@@ -1,11 +1,10 @@
-import requests
-import sys
-import re
-import urllib
-from bs4 import BeautifulSoup
 import os
-import json
+import re
+import sys
+import urllib
 from datetime import datetime
+
+from bs4 import BeautifulSoup
 
 
 class DciScorePuller:
@@ -31,9 +30,7 @@ class DciScorePuller:
         shows = []
         soup = BeautifulSoup(self.get_html_bytes(url=self.shows_url), "html5lib")
         pagination = soup.find_all("div", {"class": "pagination"})
-        total_pagination = int(
-            pagination[0].find_all("span", {"class": "total"})[0].text
-        )
+        total_pagination = int(pagination[0].find_all("span", {"class": "total"})[0].text)
         for page in range(1, total_pagination + 1):
             page_n = f"{self.shows_url}&page=%d" % page
             soup = BeautifulSoup(self.get_html_bytes(url=page_n), "html5lib")
@@ -56,9 +53,7 @@ class DciScorePuller:
         for show in self.shows:
             formatted_shows.append(
                 f"{self.season}-"
-                + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show))
-                .replace(" ", "-")
-                .lower()
+                + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show)).replace(" ", "-").lower()
             )
         self.formatted_shows = formatted_shows
         self.formatted_shows_mapping = {
@@ -72,21 +67,17 @@ class DciScorePuller:
             try:
                 if not os.path.exists(f"RECAP_HTML/{show}-recap.html"):
                     recap_html = self.get_html_bytes(show_recap_url)
-                    with open(
-                        f"RECAP_HTML/{show}-recap.html", "w"
-                    ) as full_recap_html_file:
+                    with open(f"RECAP_HTML/{show}-recap.html", "w") as full_recap_html_file:
                         full_recap_html_file.write(str(recap_html))
             except Exception as recap_pull_exception:
-                print(
-                    f"Could not save full recap html for {show}!\n\t{recap_pull_exception}"
-                )
+                print(f"Could not save full recap html for {show}!\n\t{recap_pull_exception}")
 
     def testing_full_recap_data_pulls(self):
         for show in self.formatted_shows:
             with open(f"RECAP_HTML/{show}-recap.html", "rb") as full_recap_html_file:
                 full_recap_html = full_recap_html_file.read()
                 print("FILE OPENED SUCCESSFULY! ATTT")
-                soup = BeautifulSoup(full_recap_html, "html5lib")
+                BeautifulSoup(full_recap_html, "html5lib")
                 print(f"EAT THAT DAMN SOUP! {show}")
 
     def get_competition_recap(self, show):
@@ -109,9 +100,7 @@ class DciScorePuller:
             )
 
             FULL_RECAP[show]["date"] = datetime.strptime(table_header_date, "%B %d, %Y")
-            FULL_RECAP[show]["Correct Competition Name"] = self.formatted_shows_mapping[
-                show
-            ]
+            FULL_RECAP[show]["Correct Competition Name"] = self.formatted_shows_mapping[show]
 
             for table_idx, table in enumerate(tables):
                 header = table.find_all("h4")
@@ -155,9 +144,7 @@ class DciScorePuller:
                             ge_total_scores = ge_total.find_all("span")
                             ge_total_score = ge_total_scores[0].text
 
-                            FULL_RECAP[show]["shows"][current_corp][
-                                "General Effect"
-                            ] = {
+                            FULL_RECAP[show]["shows"][current_corp]["General Effect"] = {
                                 "General Effect 1": {
                                     "Rep": float(ge_1_rep),
                                     "Perf": float(ge_1_perf),
@@ -200,9 +187,7 @@ class DciScorePuller:
                             ge_total_scores = ge_total.find_all("span")
                             ge_total_score = ge_total_scores[0].text
 
-                            FULL_RECAP[show]["shows"][current_corp][
-                                "General Effect"
-                            ] = {
+                            FULL_RECAP[show]["shows"][current_corp]["General Effect"] = {
                                 "General Effect 1 - 1": {
                                     "Rep": float(ge_1_1_rep),
                                     "Perf": float(ge_1_1_perf),
