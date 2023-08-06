@@ -40,10 +40,14 @@ class DciScorePuller:
                 for row in table_rows[1:-1]:
                     row_values = row.find_all("td")
                     try:
-                        shows.append(row_values[0].text)
+                        show = row_values[0].text
+                        if show in shows:
+                            shows.append(show + "2")
+                        else:
+                            shows.append(show)
                     except:
                         pass
-        shows = [show for show in shows if show != ""]
+        shows = [show for show in shows if show not in ["", "2"]]
         self.shows = shows
 
         return self
@@ -51,14 +55,22 @@ class DciScorePuller:
     def format_competition_titles(self):
         formatted_shows = []
         for show in self.shows:
-            formatted_shows.append(
-                f"{self.season}-"
-                + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show)).replace(" ", "-").lower()
-            )
+            if show[-1] == "2":
+                formatted_shows.append(
+                    f"{self.season}-"
+                    + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show[:-1])).replace(" ", "-").lower()
+                    + "-2"
+                )
+            else:
+                formatted_shows.append(
+                    f"{self.season}-"
+                    + re.sub(r" +", " ", re.sub(r"[^A-Za-z ]", "", show)).replace(" ", "-").lower()
+                )
         self.formatted_shows = formatted_shows
         self.formatted_shows_mapping = {
             formatted: orig for formatted, orig in zip(self.formatted_shows, self.shows)
         }
+
         return self
 
     def save_files(self):
@@ -98,6 +110,8 @@ class DciScorePuller:
                 .find_all("span")[0]
                 .text
             )
+
+            print(f"{show} --> {table_header_date}")
 
             FULL_RECAP[show]["date"] = datetime.strptime(table_header_date, "%B %d, %Y")
             FULL_RECAP[show]["Correct Competition Name"] = self.formatted_shows_mapping[show]

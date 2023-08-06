@@ -314,6 +314,17 @@ body {
     color: var(--success-2) !important;
   }
 
+  .update-profile-btn {
+    border: 0 !important;
+    color: var(--success) !important;
+  }
+
+  .update-profile-btn:hover {
+    background-color: var(--main-color) !important;
+    border: 0 !important;
+    color: var(--success-2) !important;
+  }
+
   .create-post-btn {
     border: 0 !important;
     color: var(--success) !important;

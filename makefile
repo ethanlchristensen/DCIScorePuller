@@ -28,6 +28,10 @@ wipe-db:
 	python manage.py migrate
 	python manage.py createsuperuser --noinput
 
+me: ## Wipe database and make a new one
+me:
+	python manage.py createsuperuser --noinput
+
 build: ## Build docker image
 build:
 	docker build -t $(DOCKER_NAME):$(DOCKER_TAG) -f docker/Dockerfile .

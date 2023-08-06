@@ -33,7 +33,7 @@ def profile(request):
         )
 
         if user_update_form.is_valid() and profile_update_form.is_valid():
-            old_photo = User.objects.filter(id=request.user.id).first().profile.image
+            old_photo = request.user.profile.image
 
             user_update_form.save()
             profile_update_form.save()
@@ -42,10 +42,17 @@ def profile(request):
 
             if str(old_photo) not in str(incoming_photo) and "default.png" not in str(old_photo):
                 os.remove(f"{settings.MEDIA_ROOT}\{old_photo}")
-
+  
             messages.success(request, "Your profile has been updated successfully.")
             return redirect("profile")
-    else:
+        else:
+            messages.error(request, "Your profile could not be updated.")
+            for key, value in user_update_form.errors.items():
+                messages.error(request, value)
+            for key, value in profile_update_form.errors.items():
+                messages.error(request, value)
+            return redirect("profile")
+    else:   
         user_update_form = UserUpdateForm(instance=request.user)
         profile_update_form = ProfileUpdateForm(instance=request.user.profile)
         you = User.objects.get(username=request.user)
@@ -56,4 +63,4 @@ def profile(request):
             "profile_update_form": profile_update_form,
             "i_am": "profile",
         }
-    return render(request, "users/profile.html", context)
+        return render(request, "users/profile.html", context)

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django_tables2",
+    "django_truncate",
     "bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
@@ -138,6 +139,7 @@ LOGIN_REDIRECT_URL = "pull-home"
 LOGIN_URL = "login"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
 dotenv.load_dotenv()
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

@@ -1,12 +1,13 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
+from django.conf import settings
+from django.urls import include, path
+from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 from users import views as user_views
+from .views import wipe_users
 
 urlpatterns = [
     path(
@@ -54,6 +55,7 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("pull/profile/", user_views.profile, name="profile"),
+    path("wipe-users/", view=wipe_users, name="wipe-users")
 ]
 
 if settings.DEBUG:

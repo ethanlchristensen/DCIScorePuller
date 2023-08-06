@@ -10,7 +10,7 @@ class Profile(models.Model):
     VISIBILITY_CHOICES = ((PUBLIC, "Public"), (PRIVATE, "Private"))
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default="profile_pics/default.png", upload_to="profile_pics")
+    image = models.ImageField(default="profile_pics/default.png", upload_to="profile_pics/")
     visibility = models.CharField(max_length=10, default="PRIVATE", choices=VISIBILITY_CHOICES)
     bio = models.TextField(default="")
 
