@@ -28,19 +28,21 @@ def register(request):
 def profile(request):
     if request.method == "POST":
         user_update_form = UserUpdateForm(request.POST, instance=request.user)
+
+        old_photo = str(request.user.profile.image)
+
         profile_update_form = ProfileUpdateForm(
             request.POST, request.FILES, instance=request.user.profile
         )
 
         if user_update_form.is_valid() and profile_update_form.is_valid():
-            old_photo = request.user.profile.image
 
             user_update_form.save()
             profile_update_form.save()
 
-            incoming_photo = profile_update_form.cleaned_data["image"]
+            incoming_photo = profile_update_form.cleaned_data.get("image")
 
-            if str(old_photo) not in str(incoming_photo) and "default.png" not in str(old_photo):
+            if str(old_photo) != str(incoming_photo) and "profile_pics\default.png" != str(old_photo):
                 os.remove(f"{settings.MEDIA_ROOT}\{old_photo}")
   
             messages.success(request, "Your profile has been updated successfully.")

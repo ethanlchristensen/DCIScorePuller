@@ -51,3 +51,7 @@ run: start
 exec: ## build, start and exec into docker image
 exec: start
 	docker exec -it $(DOCKER_NAME) python
+
+start-app: ## run the site
+start-app:
+	python manage.py runserver

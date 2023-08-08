@@ -32,9 +32,10 @@ body::-webkit-scrollbar {
 }
 
 body {
-    background: var(--main-color);
+    background-color: var(--main-color);
     color: var(--text-color);
     margin-top: 5rem;
+    height: 100%vh;
   }
 
   #buttons {
@@ -338,4 +339,37 @@ body {
 
   .blog-post-header {
     padding-left: 0.25rem;
+  }
+
+  .textinput {
+    border-radius: 0 !important;
+  }
+
+  .textarea {
+    border-radius: 0 !important;
+  }
+
+  .passwordinput {
+    border-radius: 0 !important;
+  }
+
+  .textinput:focus {
+    box-shadow: none !important;
+  }
+
+  .textarea:focus {
+    box-shadow: none !important;
+  }
+
+  .passwordinput:focus {
+    box-shadow: none !important;
+  }
+
+  .modal-content {
+    border-radius: 0 !important;
+  }
+
+  .autocomplete-result-list {
+    border-radius: 0 !important;
+    border: 1px solid var(--text-color) !important;
   }

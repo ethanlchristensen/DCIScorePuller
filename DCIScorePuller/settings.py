@@ -139,7 +139,6 @@ LOGIN_REDIRECT_URL = "pull-home"
 LOGIN_URL = "login"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
 
 dotenv.load_dotenv()
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
