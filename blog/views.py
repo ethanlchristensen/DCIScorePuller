@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, HttpResponseRedirect
 from django.urls import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .forms import CommentForm, CreatePostForm, UpdatePostForm, UpdateCommentForm
 from .models import Post, PostComment, PostLike
@@ -13,12 +14,23 @@ def home(request):
     View to render the home template
     """
 
+    # get the pagination page
+    page = request.GET.get("page", 1)
     # get the tempalte name
     template = "blog/home.html"
     # get the title
     title = "Blog Home"
     # get the posts
-    posts = Post.objects.all().order_by("-created_date")
+    all_posts = Post.objects.all().order_by("-created_date")
+    # paginate
+    paginator = Paginator(all_posts, 5)
+    # get that page
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
     # get your likes
     likes = PostLike.objects.filter(user=request.user)
     # create the context

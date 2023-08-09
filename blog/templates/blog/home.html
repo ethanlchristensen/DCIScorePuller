@@ -5,47 +5,64 @@
     <h2>Recent Posts</h2>
     <h5><a href="{% url 'create-post' %}">+ create post</a></h5>
 </div>
-<hr/>
+<hr />
 {% if posts %}
-    <div class="posts">
-        {% for post in posts %}
-            <div class="blog-post">
-                <div class="blog-post-header">
-                    <h4>{{ post.title }}</h4>
-                </div>
-                <div class="blog-post-content">
-                    {% if post.content|length > 200 %}
-                        <p>{{ post.content|200 }} <a href="{% url 'view-post' post.id %}">read more</a></p>
-                    {% else %}
-                        <p>{{ post.content }}</p>
-                    {% endif %}
-                </div>
-                <div class="blog-post-footer d-flex align-items-center justify-content-between">
-                    <div class="blog-post-footer-left">
-                        {{ post.author }} - {{ post.created_date }}, 
-                        {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %}, 
-                        {{ post.get_comments_count }} comments
-                    </div>
-                    <div class="blog-post-footer-right">
-                        {% if user != post.author %}
-                            {% if user not in post.user_likes.all %}
-                                <a class="link-success" href="{% url 'like-post' post.id%}?next=blog-home">like</a> - 
-                            {% else %}
-                                <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> - 
-                            {% endif %}
-                            <a href="{% url 'view-post' post.id%}">comment</a>
-                        {% else %}
-                            <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
-                            <a href="{% url 'view-post' post.id%}">view</a>
-                            <!--<a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> --->
-                        {% endif %}
-                    </div>
-                </div>
+<div class="posts">
+    {% for post in posts %}
+    <div class="blog-post">
+        <div class="blog-post-header">
+            <h4>{{ post.title }}</h4>
+        </div>
+        <div class="blog-post-content">
+            {% if post.content|length > 200 %}
+            <p>{{ post.content|200 }} <a href="{% url 'view-post' post.id %}">read more</a></p>
+            {% else %}
+            <p>{{ post.content }}</p>
+            {% endif %}
+        </div>
+        <div class="blog-post-footer d-flex align-items-center justify-content-between">
+            <div class="blog-post-footer-left">
+                {{ post.author }} - {{ post.created_date }},
+                {{ post.get_likes_count }} like{% if post.get_likes_count != 1%}s{% endif %},
+                {{ post.get_comments_count }} comments
             </div>
-            <br>
-        {% endfor %}
+            <div class="blog-post-footer-right">
+                {% if user != post.author %}
+                {% if user not in post.user_likes.all %}
+                <a class="link-success" href="{% url 'like-post' post.id%}?next=blog-home">like</a> -
+                {% else %}
+                <a class="link-danger" href="{% url 'unlike-post' post.id%}?next=blog-home">dislike</a> -
+                {% endif %}
+                <a href="{% url 'view-post' post.id%}">comment</a>
+                {% else %}
+                <a class="link-danger" href="{% url 'delete-post' post.id%}?next=blog-home">delete</a> -
+                <a href="{% url 'view-post' post.id%}">view</a>
+                <!--<a href="{% url 'update-post' post.id%}?next=blog-home">edit</a> --->
+                {% endif %}
+            </div>
+        </div>
     </div>
+    <br>
+    {% endfor %}
+    <div class="pagination d-flex align-items-center justify-content-center">
+        <span class="step-links">
+            {% if posts.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ posts.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+            </span>
+    
+            {% if posts.has_next %}
+                <a href="?page={{ posts.next_page_number }}">next</a>
+                <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
 {% else %}
-    <h3>no posts to show :(</h3>
+<h3>no posts to show :(</h3>
 {% endif %}
 {% endblock content %}
