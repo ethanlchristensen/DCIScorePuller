@@ -80,8 +80,9 @@ def scrape(request):
     View to scrape the DCI Site for Score data
     """
 
+
     # initialize the puller
-    puller = DciScorePuller(season=2023)
+    puller = DciScorePuller(season=2024)
     # get all the competitions that occured
     puller.get_competitions().format_competition_titles()
 

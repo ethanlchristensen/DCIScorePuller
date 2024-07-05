@@ -54,6 +54,7 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("pull/profile/", user_views.profile, name="profile"),
+    path("__debug__/", include("debug_toolbar.urls"))
 ]
 
 if settings.DEBUG:

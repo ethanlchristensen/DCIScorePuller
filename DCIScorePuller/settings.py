@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "pull.apps.PullConfig",
     "blog.apps.BlogConfig",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware"
 ]
 
 ROOT_URLCONF = "DCIScorePuller.urls"
@@ -150,3 +152,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5-responsive.html"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
