@@ -2,44 +2,52 @@
 {% load pull.chart_rank_tags %}
 {% block scripts %}
 <script>
-    $(document).ready(function () {
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [
-                    {% for date in chart_data.labels %}
-                        '{{date}}',
-                    {% endfor %}
-                ],
+   $(document).ready(function () {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                {% for date in chart_data.labels %}
+                    '{{date}}',
+                {% endfor %}
+            ],
             datasets: [
                 {% for corp, corp_chart_data in chart_data.items %}
                     {
                         label: '{{corp_chart_data.label}}',
                         data: [
                             {% for group in corp_chart_data.data %}
-                                { 
-                                    'x': '{{group.x}}', 'y': {{group.y}}
+                                {
+                                    {% if group.y is not None %}
+                                        'x': '{{group.x}}', 'y': {{group.y}}
+                                    {% else %}
+                                        'x': '{{group.x}}', 'y': null
+                                    {% endif %}
                                 },
                             {% endfor %}
                         ],
                         borderColor: '{{corp_chart_data.color}}',
-                        backgroundColor: '{{corp_chart_data.bg_color}}'
+                        backgroundColor: '{{corp_chart_data.bg_color}}',
+                        // Set spanGaps to true for this dataset
+                        spanGaps: true
                     },
                 {% endfor %}
             ]
         },
         options: {
             elements: {
-                line: 'star',
-                    },
+                line: {
+                    tension: 0.5
+                }
+            },
             title: {
                 display: true,
-                    text: 'Top {{ top }} {{ rank_type|SAC:"-" }} Scores Over Time'
+                text: 'Top {{ top }} {{ rank_type|SAC:"-" }} Scores Over Time'
             }
         }
-            });
-        });
+    });
+});
 </script>
 {% endblock scripts %}
 {% block content %}

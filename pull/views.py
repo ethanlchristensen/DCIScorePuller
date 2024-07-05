@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django_tables2 import RequestConfig
+from collections import OrderedDict, defaultdict
 
 from .filters import *
 from .models import *
@@ -371,194 +372,78 @@ def rank_chart(request, rank_type):
     """
     View for testing charting scores
     """
-
-    # get the template name
+    
     template = "pull/chart_rank.html"
-    # get the title
     title = "Chart Testing"
-    # get the shows for a certain Corp
-    shows = Show.objects.all()
-    # get the top-n value from url
-    top = request.GET.get("top")
-    if top:
-        top = int(top)
-    else:
-        top = 12
-    # create a list of n colors for each corp
+    top = int(request.GET.get("top", 12))
     top_n_colors = [
-        "#e6194b",
-        "#3cb44b",
-        "#ffe119",
-        "#4363d8",
-        "#f58231",
-        "#911eb4",
-        "#46f0f0",
-        "#f032e6",
-        "#bcf60c",
-        "#fabebe",
-        "#008080",
-        "#e6beff",
-        "#9a6324",
-        "#fffac8",
-        "#800000",
-        "#aaffc3",
-        "#808000",
-        "#ffd8b1",
-        "#000075",
-        "#808080",
-        "#ffffff",
-        "#000000",
+        "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
+        "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff",
+        "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
+        "#000075", "#808080", "#ffffff", "#000000",
     ]
-
-    top_n_background_colors = [
-        "#e6194b1A",
-        "#3cb44b1A",
-        "#ffe1191A",
-        "#4363d81A",
-        "#f582311A",
-        "#911eb41A",
-        "#46f0f01A",
-        "#f032e61A",
-        "#bcf60c1A",
-        "#fabebe1A",
-        "#0080801A",
-        "#e6beff1A",
-        "#9a63241A",
-        "#fffac81A",
-        "#8000001A",
-        "#aaffc31A",
-        "#8080001A",
-        "#ffd8b11A",
-        "#0000751A",
-        "#8080801A",
-        "#ffffff1A",
-        "#0000001A",
-    ]
-
-    # create the data that will be used for charting
-    # get the top 12 corps
-    if rank_type == "overall":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("total_score")]
-    elif rank_type == "general-effect-total":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("general_effect__general_effect_total")
-        ]
-    elif rank_type == "general-effect-one":
-        ordered_show_corps = [
-            show.corp.name
-            for show in shows.order_by("general_effect__general_effect_one_one__total")
-        ]
-    elif rank_type == "general-effect-two":
-        ordered_show_corps = [
-            show.corp.name
-            for show in shows.order_by("general_effect__general_effect_two_one__total")
-        ]
-    elif rank_type == "music-total":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("music__music_total")]
-    elif rank_type == "music-analysis":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("music__music_analysis_one__total")
-        ]
-    elif rank_type == "music-percussion":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("music__music_percussion__total")
-        ]
-    elif rank_type == "music-brass":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("music__music_brass__total")
-        ]
-    elif rank_type == "visual-total":
-        ordered_show_corps = [show.corp.name for show in shows.order_by("visual__visual_total")]
-    elif rank_type == "visual-proficiency":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("visual__visual_proficiency__total")
-        ]
-    elif rank_type == "visual-analysis":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("visual__visual_analysis__total")
-        ]
-    elif rank_type == "color-guard":
-        ordered_show_corps = [
-            show.corp.name for show in shows.order_by("visual__color_guard__total")
-        ]
-
-    top_n = []
-    for corp in ordered_show_corps[::-1]:
-        if corp not in top_n:
-            top_n.append(corp)
-        if len(top_n) == top:
-            break
-
-    top_n = top_n[::-1]
-    # get the chart data for the top 12
+    rank_type_mapping = {
+        "overall": "total_score",
+        "general-effect-total": "general_effect__general_effect_total",
+        "general-effect-one": "general_effect__general_effect_one_one__total",
+        "general-effect-two": "general_effect__general_effect_two_one__total",
+        "music-total": "music__music_total",
+        "music-analysis": "music__music_analysis_one__total",
+        "music-percussion": "music__music_percussion__total",
+        "music-brass": "music__music_brass__total",
+        "visual-total": "visual__visual_total",
+        "visual-proficiency": "visual__visual_proficiency__total",
+        "visual-analysis": "visual__visual_analysis__total",
+        "color-guard": "visual__color_guard__total",
+    }
+    top_n_background_colors = [color + "1A" for color in top_n_colors]
+    shows = Show.objects.select_related("corp", "competition", "general_effect", "music", "visual").all()
+    ordered_show_corps = shows.order_by(rank_type_mapping.get(rank_type, 'total_score')).values_list("corp__name", flat=True).distinct()
+    top_n = list(OrderedDict.fromkeys(ordered_show_corps[::-1]))[:top]
+    all_dates = sorted(shows.values_list("competition__competition_date", flat=True).distinct())
     chart_data = {}
-    all_dates = []
+    
     for i, corp in enumerate(top_n):
-        corp_shows = shows.filter(corp__name=corp).order_by("competition__competition_date")
-        dates = [show.competition.competition_date for show in corp_shows]
-        for date in dates:
-            if date not in all_dates:
-                all_dates.append(date)
-
-    all_dates = sorted(all_dates)
-
-    for i, corp in enumerate(top_n):
-        chart_data[corp] = {}
-        corp_shows = shows.filter(corp__name=corp).order_by("competition__competition_date")
-        chart_data[corp]["label"] = corp
-        dates_main = []
-        scores_main = []
-        dm_idx = 0
-        sm_idx = 0
-        dates = [show.competition.competition_date for show in corp_shows]
-
+        
+        dates = [show.competition.competition_date for show in shows if show.corp.name == corp]
+        
         if rank_type == "overall":
-            scores = [show.total_score for show in corp_shows]
+            scores = [show.total_score for show in shows if show.corp.name == corp]
         elif rank_type == "general-effect-total":
-            scores = [show.general_effect.general_effect_total for show in corp_shows]
+            scores = [show.general_effect.general_effect_total for show in shows if show.corp.name == corp]
         elif rank_type == "general-effect-one":
-            scores = [show.general_effect.general_effect_one_one.total for show in corp_shows]
+            scores = [show.general_effect.general_effect_one_one.total for show in shows if show.corp.name == corp]
         elif rank_type == "general-effect-two":
-            scores = [show.general_effect.general_effect_two_one.total for show in corp_shows]
+            scores = [show.general_effect.general_effect_two_one.total for show in shows if show.corp.name == corp]
         elif rank_type == "music-total":
-            scores = [show.music.music_total for show in corp_shows]
+            scores = [show.music.music_total for show in shows if show.corp.name == corp]
         elif rank_type == "music-analysis":
-            scores = [show.music.music_analysis_one.total for show in corp_shows]
+            scores = [show.music.music_analysis_one.total for show in shows if show.corp.name == corp]
         elif rank_type == "music-percussion":
-            scores = [show.music.music_percussion.total for show in corp_shows]
+            scores = [show.music.music_percussion.total for show in shows if show.corp.name == corp]
         elif rank_type == "music-brass":
-            scores = [show.music.music_brass.total for show in corp_shows]
+            scores = [show.music.music_brass.total for show in shows if show.corp.name == corp]
         elif rank_type == "visual-total":
-            scores = [show.visual.visual_total for show in corp_shows]
+            scores = [show.visual.visual_total for show in shows if show.corp.name == corp]
         elif rank_type == "visual-proficiency":
-            scores = [show.visual.visual_proficiency.total for show in corp_shows]
+            scores = [show.visual.visual_proficiency.total for show in shows if show.corp.name == corp]
         elif rank_type == "visual-analysis":
-            scores = [show.visual.visual_analysis.total for show in corp_shows]
+            scores = [show.visual.visual_analysis.total for show in shows if show.corp.name == corp]
         elif rank_type == "color-guard":
-            scores = [show.visual.color_guard.total for show in corp_shows]
-
-        for date in all_dates:
-            if date in dates:
-                dates_main.append(dates[dm_idx])
-                dm_idx += 1
-                scores_main.append(scores[sm_idx])
-                sm_idx += 1
-            else:
-                try:
-                    dates_main.append(date)
-                    scores_main.append(scores[sm_idx])
-                except IndexError:
-                    dates_main.append(date)
-                    scores_main.append(scores[sm_idx - 1])
-        chart_data[corp]["data"] = [
-            {"x": date, "y": score} for date, score in zip(dates_main, scores_main)
-        ]
+            scores = [show.visual.color_guard.total for show in shows if show.corp.name == corp]
+        
+        date_scores = {date: "null" for date in all_dates}
+        
+        for date, score in zip(dates, scores): date_scores[date] = score
+        
+        chart_data[corp] = {}
+        chart_data[corp]["label"] = corp
+        chart_data[corp]["data"] = [{"x": date, "y": date_scores[date]} for date in all_dates]
         chart_data[corp]["color"] = top_n_colors[i % len(top_n_colors)]
         chart_data[corp]["bg_color"] = top_n_background_colors[i % len(top_n_background_colors)]
-
+    
     chart_data["labels"] = all_dates
 
-    # create the context
     context = {
         "title": title,
         "shows": shows,
